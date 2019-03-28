@@ -11,3 +11,4 @@ cdu () {
 }
 alias 51="ssh 140.109.19.51"
 alias 191="ssh 140.109.19.191"
+alias ndr='nvidia-docker run --shm-size=2g --ulimit memlock=-1 --rm --ulimit stack=67108864 -it -e NVIDIA_VISIBLE_DEVICES=1 -v /home/cwhsu/tmp/_mylocal:/home/cwhsu/_mylocal nvcr.io/nvidia/tensorflow:18.06-py3'
