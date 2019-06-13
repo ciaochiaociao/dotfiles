@@ -33,9 +33,6 @@ alias ndr='nvidia-docker run --shm-size=2g --ulimit memlock=-1 --rm --ulimit sta
 alias vialias="vi ~/.bash_aliases"
 
 if [ -f ~/.bash_local ]; then
-	alias loadbash=". ~/.bash_local"
-	alias vib="vi ~/.bash_local"
-else
-	alias loadbash="source ~/.bashrc"
-	alias vib="vi ~/.bashrc"
+	source ~/.bash_local
+	alias vilocal="vi ~/.bash_local"
 fi
