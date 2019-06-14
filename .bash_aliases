@@ -27,10 +27,18 @@ alias l.="ls -d . --color=auto"
 
 
 alias vialias="vi ~/.bash_aliases"
-alias loadbash="source ~/.bashrc"
-alias vib="vi ~/.bashrc"
 
 if [ -f ~/.bash_local ]; then
 	source ~/.bash_local
 	alias vilocal="vi ~/.bash_local"
+fi
+
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+    alias loadbash="source ~/.bashrc"
+    alias vib="vi ~/.bashrc"
+elif [ -f ~/.bash_profile ]; then
+    source ~/.bash_profile
+    alias loadbash="source ~/.bash_profile"
+    alias vib="vi ~/.bash_profile"
 fi
