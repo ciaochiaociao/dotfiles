@@ -37,3 +37,4 @@ if [ -f ~/.bash_local ]; then
 	source ~/.bash_local
 	alias vilocal="vi ~/.bash_local"
 fi
+echo ".bash file loading successfully! "
