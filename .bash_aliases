@@ -34,11 +34,9 @@ if [ -f ~/.bash_local ]; then
 fi
 
 if [ -f ~/.bashrc ]; then
-    source ~/.bashrc
     alias loadbash="source ~/.bashrc"
     alias vib="vi ~/.bashrc"
 elif [ -f ~/.bash_profile ]; then
-    source ~/.bash_profile
     alias loadbash="source ~/.bash_profile"
     alias vib="vi ~/.bash_profile"
 fi
