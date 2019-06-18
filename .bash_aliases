@@ -40,3 +40,5 @@ elif [ -f ~/.bash_profile ]; then
     alias loadbash="source ~/.bash_profile"
     alias vib="vi ~/.bash_profile"
 fi
+
+echo ".bash file loading successfully! "
