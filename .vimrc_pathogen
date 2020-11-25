@@ -1,0 +1,72 @@
+autocmd! bufwritepost .vimrc source %
+
+set pastetoggle=<F2>
+set clipboard=unnamed
+
+set mouse=a
+set bs=2
+
+let mapleader = ","
+
+noremap <C-Z> :update<CR>
+vnoremap <C-Z> <C-C>:update<CR>
+inoremap <C-Z> <C-O>:update<CR>
+
+noremap <Leader>e :quit<CR>
+noremap <Leader>E :qa!<CR>
+
+map <Leader>n <esc>:tabprevious<CR>
+map <Leader>m <esc>:tabnext<CR>
+
+vnoremap <Leader>s :sort<CR>
+
+map <C-J> <C-W>j
+map <C-K> <C-W>k
+map <C-L> <C-W>l
+map <C-H> <C-W>h
+
+vnoremap < <gv
+vnoremap > >gv
+
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+autocmd InsertLeave * match ExtraWhitespace /\s\+S/
+
+" mkdir -p ~/.vim/colors && cd ~/.vim/colors
+" wget -O wombat256mod.vim http://www.vim.org/scripts/download_script.php?src_id=13400
+set t_Co=256
+color wombat256mod
+
+filetype off
+filetype plugin indent on
+syntax on
+
+set number
+set tw=79
+set nowrap
+set fo-=t
+set colorcolumn=80
+highlight ColorColumn ctermbg=233
+
+vmap Q gq
+nmap Q gqap
+
+set history=700
+set undolevels=700
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set shiftround
+set expandtab
+
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+set nobackup
+set nowritebackup
+set noswapfile
+
+
+call pathogen#infect()
