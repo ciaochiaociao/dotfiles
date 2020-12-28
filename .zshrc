@@ -91,6 +91,11 @@ SPACESHIP_TIME_12HR=true
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
+bindkey -v
+bindkey -s jk '\e'
+bindkey -s kj '\e' 
+eval spaceship_vi_mode_enable
+
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -99,10 +104,18 @@ SPACESHIP_TIME_12HR=true
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias dc="docker-compose"
+
+if [ -f ~/.local_aliases ]; then
+	source ~/.local_aliases
+fi
+
+if [ -f ~/.common_aliases ]; then
+	source ~/.common_aliases
+fi
+alias loadrc="source $HOME/.zshrc"
+export CONDA_CHANGEPS1=no  # use oh-my-zsh theme: spaceship conda prompt instead
 
 
-export CONDA_CHANGEPS1=no
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/cwhsu/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -117,4 +130,6 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+echo ".zshrc file loading successfully! "
 
