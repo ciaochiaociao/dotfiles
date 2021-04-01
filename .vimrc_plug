@@ -5,6 +5,8 @@ inoremap kj <Esc>
 set timeoutlen=100
 set ttimeoutlen=50
 
+"let mapleader = ','
+
 "highlight Cursor guifg=white guibg=black
 "highlight iCursor guifg=white guibg=steelblue
 "set guicursor=n-v-c:block-Cursor
@@ -268,6 +270,8 @@ let g:pymode = 0
 set tags=/tmp/.tags
 autocmd BufWritePost *.py silent! !ctags -R --fields=+l --python-kinds=-iv --languages=python -f /tmp/.tags ./ 2> /dev/null &
 
+" DVC: https://dvc.org/doc/install/plugins#vim
+autocmd! BufNewFile,BufRead Dvcfile,*.dvc,dvc.lock setfiletype yaml
 
 
 :silent !echo "vimrc loaded"

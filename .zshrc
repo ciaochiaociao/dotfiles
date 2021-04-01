@@ -68,7 +68,7 @@ ZSH_THEME="spaceship"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git git-flow z)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -91,10 +91,10 @@ SPACESHIP_TIME_12HR=true
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-bindkey -v
-bindkey -s jk '\e'
-bindkey -s kj '\e' 
-eval spaceship_vi_mode_enable
+#bindkey -v
+#bindkey -s jk '\e'
+#bindkey -s kj '\e' 
+#eval spaceship_vi_mode_enable
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -131,5 +131,39 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+
+# <<< for dvc completion https://dvc.org/doc/install/completion) <<<
+# Use modern completion system 
+autoload -Uz compinit
+compinit
+
+# Optionally, make completion output look much nicer by adding color hints. Add the following to ~/.zshrc
+# Case insensitive match
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Group matches and describe.
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+# >>> dvc completion and highlighting >>>
+
+# for init autojump plugin (j command)
+. /usr/share/autojump/autojump.sh
+
 echo ".zshrc file loading successfully! "
 
+conda activate recovery
+chdir $WDIR
+#if read -q "reply?tmux to main (y/n) ?"; then
+#    tmux a -t main || tmux new -s main
+#fi
+#zsh ~/preload-tmux.zsh
