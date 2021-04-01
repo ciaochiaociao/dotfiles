@@ -1,0 +1,7 @@
+add-apt-repository ppa:jonathonf/vim
+apt-get update
+apt-get install --upgrade -y vim
+
+vim --version
+
+apt-get install exuberant-ctags
