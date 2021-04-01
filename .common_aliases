@@ -53,5 +53,5 @@ alias gswr='git switch --recurse-submodules'
 alias gcor='git checkout --recurse-submodules'
 alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
-
+alias gmn='git merge --no-ff'
 echo ".common_aliases file loading successfully! "
