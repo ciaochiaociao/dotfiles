@@ -1,4 +1,4 @@
-mkdir -p ~/scripts/bashrc.sh
+mkdir -p ~/scripts
 touch ~/scripts/bashrc.sh
 
 echo """
