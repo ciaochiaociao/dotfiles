@@ -1,3 +1,5 @@
+# These common aliases should be shell-agnostic.
+
 # navigation
 alias ..="cd .."
 alias ...="cd ../.."
@@ -53,13 +55,29 @@ gc! () {
 	git commit --fixup HEAD~1
 	git rebase -i --autosquash HEAD~2
 }
+checkout () {
+    git checkout --recurse-submodules $1 && \
+    dvc checkout
+}
 
-if [ -f ~/.local_aliases ]; then
-	source ~/.local_aliases
-fi
+switch () {
+    git switch --recurse-submodules $1 && \
+    dvc checkout
+}
 
-if [ -f ~/.common_aliases ]; then
-	source ~/.common_aliases
-fi
+merge () {
+    git merge $1 && \
+    git submodule update
+}
 
-#echo ".bash_aliases file loading successfully! "
+rebase () {
+    git rebase $1 && \
+    git submodule update
+}
+
+alias gswr='git switch --recurse-submodules'
+alias gcor='git checkout --recurse-submodules'
+alias gdrd='git diff --submodule=diff'
+alias gdr='git diff --submodule'
+alias gmn='git merge --no-ff'
+#echo ".common_aliases file loading successfully! "
