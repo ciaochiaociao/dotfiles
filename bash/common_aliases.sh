@@ -28,15 +28,9 @@ cdu () {
     cd "${PWD%/$1/*}/$1"
 }
 
-export MYHOME=/mnt/storage/users/chiahsu
-
 # work dir
-myhome () {
-    cd $MYHOME
-}
-
-trip_utils () {
-    cd $MYHOME/trip_utils
+projdir () {
+    cd $PROJDIR
 }
 
 workdir () {
