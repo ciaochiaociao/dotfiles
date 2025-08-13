@@ -10,6 +10,7 @@ alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
 alias ll="ls -la"
+alias la="ls -a"
 alias ls="ls --color=auto"
 alias pd="pushd"
 alias bd="popd"
@@ -76,4 +77,4 @@ alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
 alias gds='git diff --staged'
 alias gmn='git merge --no-ff'
-#echo ".common_aliases file loading successfully! "
+#echo "common_aliases.sh file loading successfully! "
