@@ -3,16 +3,11 @@ touch ~/scripts/bashrc.sh
 
 echo """
 # local
-if [ -f ~/scripts/bashrc.sh ]; then
-	. ~/scripts/bashrc.sh
-fi
+[ -f ~/scripts/bashrc.sh ] && source ~/scripts/bashrc.sh
 
 # remote
-if [ -f ~/dotfiles/bash/bashrc.sh ]; then
-	. ~/dotfiles/bash/bashrc.sh
-fi
+[ -f ~/dotfiles/bash/bashrc.sh ] && . ~/dotfiles/bash/bashrc.sh
 
 # shell-agnostic aliases
-if [ -f ~/dotfiles/bash/common_aliases.sh ]; then
-	. ~/dotfiles/bash/common_aliases.sh
-fi""" >> ~/.bashrc
+[ -f ~/dotfiles/bash/common_aliases.sh ] && . ~/dotfiles/bash/common_aliases.sh
+""" >> ~/.bashrc
