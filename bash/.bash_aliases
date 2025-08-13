@@ -1,8 +1,8 @@
-if [ -f .local_aliases ]; then
-	source local_aliases.sh
+if [ -f ~/dotfiles/bash/.local_aliases ]; then
+	source ~/dotfiles/bash/local_aliases.sh
 fi
 
-if [ -f common_aliases.sh ]; then
-	source common_aliases.sh
+if [ -f ~/dotfiles/bash/common_aliases.sh ]; then
+	source ~/dotfiles/bash/common_aliases.sh
 fi
 
