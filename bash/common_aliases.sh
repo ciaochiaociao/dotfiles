@@ -75,9 +75,11 @@ rebase () {
     git submodule update
 }
 
+alias gss='git status'
 alias gswr='git switch --recurse-submodules'
 alias gcor='git checkout --recurse-submodules'
 alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
+alias gds='git diff --staged'
 alias gmn='git merge --no-ff'
 #echo ".common_aliases file loading successfully! "
