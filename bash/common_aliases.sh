@@ -77,4 +77,38 @@ alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
 alias gds='git diff --staged'
 alias gmn='git merge --no-ff'
+
+
+# \e[38;5;?m for foreground 256 colors 
+# \e[48;5;?m for background
+show_256_colors () {
+	echo 'use \e[38;5;#m] syntax where # is the code below.'
+	for i in {0..255}; do
+	  printf "\e[38;5;${i}m%3s \e[0m" "$i"
+	  if (( (i+1) % 16 == 0 )); then
+	    echo
+	  fi
+	done
+	echo
+	echo 'use \e[48;5;#m] syntax where # is the code below.'
+	for i in {0..255}; do
+	  printf "\e[48;5;${i}m%3s \e[0m" "$i"
+	  if (( (i+1) % 16 == 0 )); then
+	    echo
+	  fi
+	done
+}
+
+show_16_colors () {
+	echo 'use \e[#m] syntax where # is the code below.'
+	for i in {30..37} {90..97}; do
+		printf "\e[${i}m%3s\e[0m " "$i"
+	done
+	echo
+	for i in {40..47} {100..107}; do
+		printf "\e[${i}m%3s\e[0m " "$i"
+	done
+	echo
+}
+
 #echo "common_aliases.sh file loading successfully! "
