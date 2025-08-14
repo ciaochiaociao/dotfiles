@@ -45,40 +45,6 @@ change-workdir () {
     cd $(cat ~/.workdir)
 }
 
-# git
-gc! () {
-	git commit --fixup HEAD~1
-	git rebase -i --autosquash HEAD~2
-}
-checkout () {
-    git checkout --recurse-submodules $1 && \
-    dvc checkout
-}
-
-switch () {
-    git switch --recurse-submodules $1 && \
-    dvc checkout
-}
-
-merge () {
-    git merge $1 && \
-    git submodule update
-}
-
-rebase () {
-    git rebase $1 && \
-    git submodule update
-}
-
-alias gss='git status'
-alias gswr='git switch --recurse-submodules'
-alias gcor='git checkout --recurse-submodules'
-alias gdrd='git diff --submodule=diff'
-alias gdr='git diff --submodule'
-alias gds='git diff --staged'
-alias gmn='git merge --no-ff'
-
-
 # \e[38;5;?m for foreground 256 colors 
 # \e[48;5;?m for background
 show_256_colors () {
@@ -111,4 +77,75 @@ show_16_colors () {
 	echo
 }
 
+# git
+gc! () {
+	git commit --fixup HEAD~1
+	git rebase -i --autosquash HEAD~2
+}
+checkout () {
+    git checkout --recurse-submodules $1 && \
+    dvc checkout
+}
+
+switch () {
+    git switch --recurse-submodules $1 && \
+    dvc checkout
+}
+
+merge () {
+    git merge $1 && \
+    git submodule update
+}
+
+rebase () {
+    git rebase $1 && \
+    git submodule update
+}
+
+gp () {
+	read -p "Are you sure to make a quick dirty commit and push to the repo? (y/n) " -n 1 ans
+	ans=${ans:-n}
+	if [[ ans == 'y' ]]; then
+		git add .
+		git commit -m 'temp'
+	fi
+	echo
+	read -p "Push to the remote branch $(git rev-parse --abbrev-ref HEAD)? (y/n) " -n 1  ans
+	echo
+	ans=${ans:-n}
+	if [[ ans == 'y' ]]; then
+		git push
+		echo "Pushed."
+	fi
+}
+
 #echo "common_aliases.sh file loading successfully! "
+alias gss='git status'
+alias gswr='git switch --recurse-submodules'
+alias gcor='git checkout --recurse-submodules'
+alias gdrd='git diff --submodule=diff'
+alias gdr='git diff --submodule'
+alias gds='git diff --staged'
+alias gmn='git merge --no-ff'
+alias gcm='git commit -m'
+alias gb='git branch'
+
+add_to_common () {
+	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
+	source ~/dotfiles/bash/common_aliases.sh
+}
+
+add_to_local () {
+	echo "$1" >> ~/scripts/bashrc.sh
+	source ~/dotfiles/bash/common_aliases.sh
+}
+
+open_common () {
+	$EDITOR ~/dotfiles/bash/common_aliases.sh
+}
+
+open_local () {
+	$EDITOR ~/scripts/bashrc.sh
+}
+alias open_vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
+alias l="ls"
