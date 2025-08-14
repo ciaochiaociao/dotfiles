@@ -4,4 +4,3 @@ HISTFILESIZE=10000
 HISTSIZE=10000
 HISTFILE=~/.bash_history_big
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
