@@ -107,16 +107,16 @@ gpd () {
 	# like git push "dirty"
 	read -p "Are you sure to make a quick dirty commit and push to the repo? (y/n) " -n 1 ans
 	ans=${ans:-n}
-	if [[ ans == 'y' ]]; then
+	echo
+	if [[ $ans == 'y' ]]; then
+        echo "Commiting changes ..."
 		git add ~/dotfiles
 		git commit -m 'temp'
 	fi
-	echo
 	read -p "Push to the remote branch $(git rev-parse --abbrev-ref HEAD)? (y/n) " -n 1  ans
-	echo
 	ans=${ans:-n}
-	if [[ ans == 'y' ]]; then
-		
+	echo
+	if [[ $ans == 'y' ]]; then
 		git push
 		echo "Pushed."
 	fi
@@ -125,13 +125,18 @@ gpd () {
 #echo "common_aliases.sh file loading successfully! "
 alias gss='git status'
 alias gswr='git switch --recurse-submodules'
+alias gco='git checkout'
 alias gcor='git checkout --recurse-submodules'
+alias gd="git diff"
 alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
 alias gds='git diff --staged'
 alias gmn='git merge --no-ff'
 alias gcm='git commit -m'
 alias gb='git branch'
+alias gp="git push"
+alias gl="git log"
+alias glg="git log --graph --all --decorate"
 
 # manage aliases
 add_to_common () {
@@ -163,4 +168,3 @@ list_aliases () {
 
 # others
 alias open_vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
-alias gd="git diff"
