@@ -32,7 +32,7 @@ set autoindent
 "set smartindent " mainly for C/C++, Java, etc.
 
 
-set mouse
+"set mouse
 nnoremap <F2> :if &mouse == 'a' \| set mouse= \| else \| set mouse=a \| endif<CR>
 nnoremap <F3> :set wrap!
 

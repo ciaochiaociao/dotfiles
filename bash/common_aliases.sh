@@ -136,7 +136,8 @@ alias gcm='git commit -m'
 alias gb='git branch'
 alias gp="git push"
 alias gl="git log"
-alias glg="git log --graph --all --decorate"
+alias glga="git log --graph --all --decorate"
+alias glg="git log --graph --decorate"
 
 # manage aliases
 add_to_common () {
@@ -164,6 +165,24 @@ open_local () {
 list_aliases () {
 	declare -F | cut -d' ' -f 3 | grep -v '^_'
 	alias
+}
+
+push_dotfiles () {
+    (
+        cd ~/dotfiles
+        git add . && \
+        read -p "Commit message: " msg && \
+        echo
+        git commit -m "$msg" && \
+        git push
+    )
+}
+
+pull_dotfiles () {
+    (
+        cd ~/dotfiles
+        git pull
+    )
 }
 
 # others
