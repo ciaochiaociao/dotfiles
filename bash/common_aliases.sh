@@ -9,6 +9,7 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
+alias l="ls"
 alias ll="ls -la"
 alias la="ls -a"
 alias ls="ls --color=auto"
@@ -102,11 +103,12 @@ rebase () {
     git submodule update
 }
 
-gp () {
+gpd () {
+	# like git push "dirty"
 	read -p "Are you sure to make a quick dirty commit and push to the repo? (y/n) " -n 1 ans
 	ans=${ans:-n}
 	if [[ ans == 'y' ]]; then
-		git add .
+		git add ~/dotfiles
 		git commit -m 'temp'
 	fi
 	echo
@@ -114,6 +116,7 @@ gp () {
 	echo
 	ans=${ans:-n}
 	if [[ ans == 'y' ]]; then
+		
 		git push
 		echo "Pushed."
 	fi
@@ -130,6 +133,7 @@ alias gmn='git merge --no-ff'
 alias gcm='git commit -m'
 alias gb='git branch'
 
+# manage aliases
 add_to_common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
 	source ~/dotfiles/bash/common_aliases.sh
@@ -144,8 +148,19 @@ open_common () {
 	$EDITOR ~/dotfiles/bash/common_aliases.sh
 }
 
+open_bashrc () {
+	$EDITOR ~/dotfiles/bash/bashrc.sh
+}
+
 open_local () {
 	$EDITOR ~/scripts/bashrc.sh
 }
+
+list_aliases () {
+	declare -F | cut -d' ' -f 3 | grep -v '^_'
+	alias
+}
+
+# others
 alias open_vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
-alias l="ls"
+alias gd="git diff"
