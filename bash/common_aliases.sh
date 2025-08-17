@@ -49,7 +49,7 @@ change-workdir () {
 
 # \e[38;5;?m for foreground 256 colors 
 # \e[48;5;?m for background
-show_256_colors () {
+show-256-colors () {
 	echo 'use \e[38;5;#m] syntax where # is the code below.'
 	for i in {0..255}; do
 	  printf "\e[38;5;${i}m%3s \e[0m" "$i"
@@ -67,7 +67,7 @@ show_256_colors () {
 	done
 }
 
-show_16_colors () {
+show-16-colors () {
 	echo 'use \e[#m] syntax where # is the code below.'
 	for i in {30..37} {90..97}; do
 		printf "\e[${i}m%3s\e[0m " "$i"
@@ -141,37 +141,48 @@ alias glga="git log --graph --all --decorate"
 alias glg="git log --graph --decorate"
 
 # manage aliases
-add_to_common () {
+add-to-common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
 	source ~/dotfiles/bash/common_aliases.sh
+    load-bashrc
 }
 
-add_to_local () {
+add-to-local () {
 	echo "$1" >> ~/scripts/bashrc.sh
 	source ~/dotfiles/bash/common_aliases.sh
+    load-bashrc
 }
 
-open_common () {
+open-common () {
 	$EDITOR ~/dotfiles/bash/common_aliases.sh
+    load-bashrc
 }
 
-open_bashrc () {
+open-bashrc () {
 	$EDITOR ~/dotfiles/bash/bashrc.sh
+    load-bashrc
 }
 
-open_local () {
+open-local () {
 	$EDITOR ~/scripts/bashrc.sh
+    load-bashrc
 }
 
-list_aliases () {
+load-bashrc () {
+    source ~/.bashrc
+    echo "Loaded shell rc file."
+}
+
+list-aliases () {
 	declare -F | cut -d' ' -f 3 | grep -v '^_'
 	alias
 }
 
-push_dotfiles () {
+push-dotfiles () {
     (
         cd ~/dotfiles
-        git add . && \
+        git add --all . && \
+        git status && \
         read -p "Commit message: " msg && \
         echo
         git commit -m "$msg" && \
@@ -179,7 +190,7 @@ push_dotfiles () {
     )
 }
 
-pull_dotfiles () {
+pull-dotfiles () {
     (
         cd ~/dotfiles
         git pull
@@ -187,4 +198,5 @@ pull_dotfiles () {
 }
 
 # others
-alias open_vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
+alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
+
