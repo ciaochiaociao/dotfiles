@@ -1,3 +1,4 @@
+export EDITOR=vim
 # These common aliases should be shell-agnostic.
 
 # navigation
@@ -9,10 +10,10 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
-alias l="ls"
+alias l="ls -a"
 alias ll="ls -la"
 alias la="ls -a"
-alias ls="ls --color=auto"
+alias ls="ls --color=auto -a"
 alias pd="pushd"
 alias bd="popd"
 alias sd="dirs -v"

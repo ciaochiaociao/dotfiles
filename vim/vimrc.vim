@@ -1,5 +1,5 @@
 "Enable line numbers
-"set number
+set number
 set relativenumber
 
 set ignorecase
@@ -44,3 +44,12 @@ filetype plugin indent on
 "set completeopt=menu,menuone,noselect
 
 "shortmess=filnxtToO "default
+
+"for file searching
+set path+=**
+
+"autocompletion
+set wildmenu
+set wildignore+=*.o,*.obj,*.pyc,*.git,*.swp
+"set wildmode=longest:full:full
+set completeopt
