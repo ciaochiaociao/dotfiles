@@ -11,3 +11,7 @@ echo """
 # shell-agnostic aliases
 [ -f ~/dotfiles/bash/common_aliases.sh ] && . ~/dotfiles/bash/common_aliases.sh
 """ >> ~/.bashrc
+
+echo """
+source ~/dotfiles/vim/vimrc.vim
+""" >> ~/.vimrc
