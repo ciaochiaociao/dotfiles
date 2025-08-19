@@ -5,8 +5,8 @@ set relativenumber
 set ignorecase
 set smartcase
 
-"set hlsearch
-"nnoremap <Esc> :nohlsearch<CR><Esc>
+set hlsearch
+nnoremap <Esc> :nohlsearch<CR><Esc>
 
 "set showmatch
 

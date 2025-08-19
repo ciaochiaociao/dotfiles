@@ -199,4 +199,7 @@ pull-dotfiles () {
 
 # others
 alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
-
+run-in-tmux () {
+    tmux new -s temp $SHELL \; \
+        send-keys "$1" C-m
+}
