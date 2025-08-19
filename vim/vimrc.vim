@@ -1,12 +1,17 @@
+set nocompatible
+filetype plugin indent on
+set syntax=on
+
 "Enable line numbers
 set number
 set relativenumber
+
 
 set ignorecase
 set smartcase
 
 set hlsearch
-nnoremap <Esc> :nohlsearch<CR><Esc>
+"nnoremap <Esc> :nohlsearch<CR>
 
 "set showmatch
 
@@ -34,10 +39,8 @@ set autoindent
 
 "set mouse
 nnoremap <F2> :if &mouse == 'a' \| set mouse= \| else \| set mouse=a \| endif<CR>
-nnoremap <F3> :set wrap!
 
-set syntax=on
-filetype plugin indent on
+nnoremap <F3> :set wrap!
 
 "set backspace=indent,eol,start
 
@@ -51,4 +54,5 @@ set path+=**
 set wildmenu
 set wildignore+=*.o,*.obj,*.pyc,*.git,*.swp
 "set wildmode=longest:full:full
-set completeopt=menu,menuone,noselect
+set completeopt=menu,menuone  " selectone is only available for neovim
+
