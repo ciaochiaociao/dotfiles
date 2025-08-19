@@ -43,7 +43,7 @@ workdir () {
 alias cdw=workdir
 
 change-workdir () {
-    find $MYHOME -maxdepth 1 -type d | fzf > ~/.workdir
+    find $MYHOME -maxdepth 1 -type d | fzf | xargs realpath > ~/.workdir
     cd $(cat ~/.workdir)
 }
 
