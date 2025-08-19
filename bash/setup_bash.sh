@@ -11,3 +11,14 @@ echo """
 # shell-agnostic aliases
 [ -f ~/dotfiles/bash/common_aliases.sh ] && . ~/dotfiles/bash/common_aliases.sh
 """ >> ~/.bashrc
+
+echo """
+source ~/dotfiles/vim/vimrc.vim
+""" >> ~/.vimrc
+
+read -p "What is your project directory? " PROJDIR
+if [[ PROJDIR != "" ]]; then
+    echo "export PROJDIR=$PROJDIR" >> ~/scripts/bashrc.sh
+else
+    echo "Project diretorcy is not set. Please manually export PROJDIR in ~/.bashrc"
+fi

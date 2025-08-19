@@ -10,9 +10,9 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
-alias l="ls -a"
-alias ll="ls -la"
-alias la="ls -a"
+alias l="ls -aCF"
+alias ll="ls -laF"
+alias la="ls -A"
 alias ls="ls --color=auto -a"
 alias pd="pushd"
 alias bd="popd"
@@ -43,7 +43,7 @@ workdir () {
 alias cdw=workdir
 
 change-workdir () {
-    find $MYHOME -maxdepth 1 -type d | fzf > ~/.workdir
+    find $MYHOME -maxdepth 1 -type d | fzf | xargs realpath > ~/.workdir
     cd $(cat ~/.workdir)
 }
 
@@ -196,6 +196,17 @@ pull-dotfiles () {
         git pull
     )
 }
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
 
 # others
 alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
