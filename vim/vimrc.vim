@@ -41,7 +41,6 @@ filetype plugin indent on
 
 "set backspace=indent,eol,start
 
-"set completeopt=menu,menuone,noselect
 
 "shortmess=filnxtToO "default
 
@@ -52,4 +51,4 @@ set path+=**
 set wildmenu
 set wildignore+=*.o,*.obj,*.pyc,*.git,*.swp
 "set wildmode=longest:full:full
-set completeopt
+set completeopt=menu,menuone,noselect
