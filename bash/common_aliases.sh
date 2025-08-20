@@ -206,8 +206,9 @@ push-dotfiles () {
         cd ~/dotfiles
         git add --all . && \
         git status && \
-        read -p "Commit message: " msg && \
-        echo
+        read -p "Commit message: " msg
+        : ${msg:=temp}
+        echo $msg
         git commit -m "$msg" && \
         git push
     )
