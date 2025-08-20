@@ -46,13 +46,18 @@ dj () {
 }
 
 da () {
-    [[ -d "$(realpath "$1")" ]] && pushd -n "$(realpath "$1")" || { echo "Invalid path: $1"; return 1; }
+    local sel
+    if [[ -z $1 ]]; then
+        sel=$(fzf) || return 130
+    else
+        sel=$1
+    fi
+    [[ -d "$(realpath "$sel")" ]] && pushd -n -- "$(realpath "$sel")" || { echo "Invalid path: $sel"; return 1; }
 }
 
 dr () {
     popd -n "+$1"
 }
-
 
 # work dir
 projdir () {
