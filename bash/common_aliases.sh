@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 export EDITOR=vim
 # These common aliases should be shell-agnostic.
 
@@ -172,32 +174,35 @@ alias glg="git log --graph --decorate"
 add-to-common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
 	source ~/dotfiles/bash/common_aliases.sh
-    load-bashrc
+    load-shellrc
 }
 
 add-to-local () {
 	echo "$1" >> ~/scripts/bashrc.sh
 	source ~/dotfiles/bash/common_aliases.sh
-    load-bashrc
+    load-shellrc
 }
 
 open-common () {
 	$EDITOR ~/dotfiles/bash/common_aliases.sh
-    load-bashrc
+    load-shellrc
 }
 
 open-bashrc () {
 	$EDITOR ~/dotfiles/bash/bashrc.sh
-    load-bashrc
+    load-shellrc
 }
 
 open-local () {
 	$EDITOR ~/scripts/bashrc.sh
-    load-bashrc
+    load-shellrc
 }
 
-load-bashrc () {
-    source ~/.bashrc
+load-shellrc () {
+    case $SHELL in
+        */bash) source ~/.bashrc;;
+        */zsh) source ~/.zshrc;;
+    esac
     echo "Loaded shell rc file."
 }
 
@@ -243,3 +248,6 @@ run-in-tmux () {
     tmux new -s temp $SHELL \; \
         send-keys "$1" C-m
 }
+alias glg1="git log --graph --all --decorate --oneline"
+alias glg1="git log --graph --decorate --oneline"
+alias glga1="git log --graph --all --decorate --oneline"
