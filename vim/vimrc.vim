@@ -1,6 +1,6 @@
 set nocompatible
 filetype plugin indent on
-set syntax=on
+syntax on
 
 "Enable line numbers
 set number
