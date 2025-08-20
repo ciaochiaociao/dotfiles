@@ -40,8 +40,8 @@ set autoindent
 "set mouse
 nnoremap <F2> :if &mouse == 'a' \| set mouse= \| else \| set mouse=a \| endif<CR>
 
-nnoremap <F3> :set wrap!
-
+nnoremap <F3> :set wrap!<CR>
+nnoremap <F4> :set relativenumber! number!<CR>
 "set backspace=indent,eol,start
 
 

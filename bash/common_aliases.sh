@@ -14,9 +14,6 @@ alias l="ls -aCF"
 alias ll="ls -laF"
 alias la="ls -A"
 alias ls="ls --color=auto -a"
-alias pd="pushd"
-alias bd="popd"
-alias sd="dirs -v"
 
 cdn () {
     pushd . 
@@ -30,6 +27,32 @@ cdn () {
 cdu () {
     cd "${PWD%/$1/*}/$1"
 }
+
+# pushd, popd, dirs
+alias dl="dirs -v"
+
+dc () {
+    [[ -d $1 ]] || { echo "No such dir: $1" >&2; return 1; }
+    pushd "$1" > /dev/null
+}
+
+dj () {
+    local -a s; mapfile -t s < <(dirs -l -p)
+    select d in "${s[@]}"; do
+        [[ -n $d ]] || { echo "Invalid"; continue; }
+        pushd "+$((REPLY-1))" > /dev/null || return 1
+        break
+    done
+}
+
+da () {
+    [[ -d "$(realpath "$1")" ]] && pushd -n "$(realpath "$1")" || { echo "Invalid path: $1"; return 1; }
+}
+
+dd () {
+    popd -n "+$1"
+}
+
 
 # work dir
 projdir () {
