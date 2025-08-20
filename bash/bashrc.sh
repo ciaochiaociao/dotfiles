@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # https://www.gnu.org/software/bash/manual/html_node/Bash-History-Facilities.html
 shopt -s histappend
 HISTFILESIZE=10000
