@@ -49,7 +49,7 @@ da () {
     [[ -d "$(realpath "$1")" ]] && pushd -n "$(realpath "$1")" || { echo "Invalid path: $1"; return 1; }
 }
 
-dd () {
+dr () {
     popd -n "+$1"
 }
 
