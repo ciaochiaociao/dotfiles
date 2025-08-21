@@ -36,7 +36,7 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-if [[ "$SHELL" =~ */bash ]]; then
+if [[ "$SHELL" =~ .*/bash ]]; then
     if [ "$color_prompt" = yes ]; then
         PS1='\[\033[01;37m\]${debian_chroot:+($debian_chroot)} \[\033[01;36m\] @\h \[\033[01;35m\]:\W $ \[\033[00m\]'
     else
