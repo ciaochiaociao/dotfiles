@@ -250,3 +250,7 @@ run-in-tmux () {
 alias glg1="git log --graph --all --decorate --oneline"
 alias glg1="git log --graph --decorate --oneline"
 alias glga1="git log --graph --all --decorate --oneline"
+
+# for trip3
+alias show-uvm-errors="grep -P 'UVM_ERROR (?!:)' lsf.log"
+alias show-all-uvm-errors="grep -P 'UVM_ERROR (?!:)' */lsf.log"
