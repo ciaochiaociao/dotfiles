@@ -244,8 +244,8 @@ fi
 # others
 alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
 run-in-tmux () {
-    tmux new -s temp $SHELL \; \
-        send-keys "$1" C-m
+    tmux new $SHELL \; \
+        send-keys "$*" C-m
 }
 alias glg1="git log --graph --all --decorate --oneline"
 alias glg1="git log --graph --decorate --oneline"
