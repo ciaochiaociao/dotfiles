@@ -31,13 +31,12 @@ cdu () {
 }
 
 # pushd, popd, dirs
-alias dl="dirs -v"
-
-dc () {
-    [[ -d $1 ]] || { echo "No such dir: $1" >&2; return 1; }
-    pushd "$1" > /dev/null
+alias po="popd"
+pd () {
+        pushd "$1" > /dev/null
 }
 
+alias dl="dirs -v"
 dj () {
     local -a s; mapfile -t s < <(dirs -l -p)
     select d in "${s[@]}"; do
