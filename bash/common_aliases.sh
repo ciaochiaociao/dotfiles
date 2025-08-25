@@ -60,6 +60,9 @@ dr () {
     popd -n "+$1"
 }
 
+# z
+alias zj="z -l | awk '{print \$2}' | fzf"
+
 # work dir
 projdir () {
     cd $PROJDIR
@@ -245,12 +248,37 @@ fi
 alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
 run-in-tmux () {
     tmux new $SHELL \; \
-        send-keys "$*" C-m
+        send-keys "$* |& tee run-in-tmux.log; test ${PIPESTATUS[0]} -eq 0" C-m
 }
 alias glg1="git log --graph --all --decorate --oneline"
 alias glg1="git log --graph --decorate --oneline"
 alias glga1="git log --graph --all --decorate --oneline"
 
 # for trip3
-alias show-uvm-errors="grep -P 'UVM_ERROR (?!:)' lsf.log"
-alias show-all-uvm-errors="grep -P 'UVM_ERROR (?!:)' */lsf.log"
+
+run-tn () {
+    source setup.sh
+
+    if [[ -d $1 ]]; then
+        read -p "overwrite the existing directory $1 ? (y/n) " -n 1 ans
+        if [[ $ans == "y" ]]; then
+            rm -r $1
+        else
+            exit 1
+        fi
+    else
+        mkdir $1
+    fi
+    tmux new $SHELL \; \
+        send-keys "runit -j $1 -tn $2 |& tee $1/RESULTS_TMP.txt; test ${PIPESTATUS[0]} -eq 0" C-m
+}
+
+alias show-failed="grep -P '\S* - \KFAILED' RESULTS.txt"
+alias show-not-run="grep -P '\S* - \KNOT_RUN' RESULTS.txt"
+
+alias grep-uvm-errors="grep -P 'UVM_ERROR (?!:)'"
+alias show-one-uvm-error="grep-uvm-errors lsf.log"
+alias show-uvm-errors="grep-uvm-errors RESULTS.txt"
+alias show-uvm-errors-from-logs="grep-uvm-errors */lsf.log"
+
+alias show-not-passed="show-uvm-errors; show-failed; show-not-run"
