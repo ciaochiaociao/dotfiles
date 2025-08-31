@@ -1,9 +1,16 @@
 # fzf
-read -p "Install fzf? (y/n) " -n 1 rust
+read -p "Install fzf? (y/n) " -n 1 fzf
 echo
-if [[ $ans == "y" ]]; then
+if [[ $fzf == "y" ]]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
+fi
+
+# Linux Homebrew
+read -p "Install Linux Homebrew? (y/n)" -n 1 brew
+echo
+if [[ $brew == "y" ]]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # Rust / Cargo
@@ -29,6 +36,27 @@ if [[ $z == "y" ]]; then
     echo '. ~/z/z.sh' >> ~/.bashrc
 fi
 
+# autojump
+read -p "Install autojump? (y/n) " -n 1 aj
+echo 
+if [[ $aj == "y" ]]; then
+    python3 -m pip install --user autojump
+    if [[ $? -eq 0 ]]; then
+        [[ -s $(python3 -m site --user-base)/etc/profile.d/autojump.sh ]] && \
+          . $(python3 -m site --user-base)/etc/profile.d/autojump.sh
+    else
+        (
+            git clone https://github.com/wting/autojump.git ~/.autojump
+            cd ~/.autojump
+            ./install.py
+            cat >> ~/.bashrc <<-'EOF' [[ -s ~/.local/etc/profile.d/autojump.sh ]] && \
+              . ~/.local/etc/profile.d/autojump.sh
+              EOF
+        )
+    fi
+fi
+# TODO: zoxide
+# TODO: bashmarks
 # fd
 read -p "Install fd? (y/n) " -n 1 fd
 echo
