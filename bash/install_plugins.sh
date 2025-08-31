@@ -33,7 +33,11 @@ fi
 read -p "Install fd? (y/n) " -n 1 fd
 echo
 if [[ $fd == "y" ]]; then
-    cargo install fd-find
+
+    (
+        source ~/.cargo/env
+        cargo install fd-find
+    )
 fi
 
 # jq
@@ -41,16 +45,19 @@ fi
 read -p "Install jq? (y/n) " -n 1 jq
 echo
 if [[ $jq == "y" ]]; then
-    mkdir -p ~/.local
-    cd ~/.local
-    if command -v dpkg > /dev/null 2>&1 && \\
-        command -v apt > /dev/null 2>&1; then
-        apt download jq
-        dpkg -x jq_*_$(dpkg --print-architecture).deb .
-    fi
-    if command -v yum > /dev/null 2>&1; then
-        :
-    fi
+    (
+        mkdir -p ~/.local
+        cd ~/.local
+        if command -v dpkg > /dev/null 2>&1 && \\
+            command -v apt > /dev/null 2>&1; then
+            apt download jq
+            dpkg -x jq_*_$(dpkg --print-architecture).deb .
+        fi
+        if command -v yum > /dev/null 2>&1; then
+            yum download jq
+            rpm2cpio jq_*.rpm | cpio -idmv
+        fi
+    )
 fi
 
 # PATH
