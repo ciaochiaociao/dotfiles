@@ -61,7 +61,34 @@ dr () {
 }
 
 # z
-alias zj="z -l | awk '{print \$2}' | fzf"
+zj() {
+  local dir
+  dir="$(z -l "$@" \
+        | awk '{ $1=""; sub(/^ /,""); print }' \
+        | fzf)" || return
+  [[ -n "$dir" ]] && builtin cd "$dir"
+}
+
+# z() {
+#   if [[ -z "$1" ]]; then
+#     cd "$(command z -l | awk '{print $2}' | fzf)"
+#   else
+#     command z -l "$@" | awk '{print $2}' | fzf | while read -r dir; do
+#       cd "$dir" || return
+#     done
+#   fi
+# }
+
+# autojump
+jj() {
+  local dir
+  dir="$(
+    j -s 2>/dev/null |
+      sed -n 's/^[[:space:]]*[0-9.]\+[:[:space:]]\+//p' |
+      fzf
+  )" || return
+  [[ -n "$dir" ]] && builtin cd "$dir"
+}
 
 # work dir
 projdir () {
@@ -171,6 +198,9 @@ alias gp="git push"
 alias gl="git log"
 alias glga="git log --graph --all --decorate"
 alias glg="git log --graph --decorate"
+alias glg1="git log --graph --all --decorate --oneline"
+alias glg1="git log --graph --decorate --oneline"
+alias glga1="git log --graph --all --decorate --oneline"
 
 # manage aliases
 add-to-common () {
@@ -250,9 +280,7 @@ run-in-tmux () {
     tmux new $SHELL \; \
         send-keys "$* |& tee run-in-tmux.log; test ${PIPESTATUS[0]} -eq 0" C-m
 }
-alias glg1="git log --graph --all --decorate --oneline"
-alias glg1="git log --graph --decorate --oneline"
-alias glga1="git log --graph --all --decorate --oneline"
+alias vless='vim -R -'
 
 # for trip3
 
