@@ -29,9 +29,35 @@ if [[ $z == "y" ]]; then
     echo '. ~/z/z.sh' >> ~/.bashrc
 fi
 
-#fd
+# fd
 read -p "Install fd? (y/n) " -n 1 fd
 echo
 if [[ $fd == "y" ]]; then
     cargo install fd-find
 fi
+
+# jq
+
+read -p "Install jq? (y/n) " -n 1 jq
+echo
+if [[ $jq == "y" ]]; then
+    mkdir -p ~/.local
+    cd ~/.local
+    if command -v dpkg > /dev/null 2>&1 && \\
+        command -v apt > /dev/null 2>&1; then
+        apt download jq
+        dpkg -x jq_*_$(dpkg --print-architecture).deb .
+    fi
+    if command -v yum > /dev/null 2>&1; then
+        :
+    fi
+fi
+
+# PATH
+case :$PATH: in
+    *:"$HOME/.local/usr/bin":*)
+        ;;
+    *)
+        export PATH="$HOME/.local/usr/bin:$PATH"
+        ;;
+esac
