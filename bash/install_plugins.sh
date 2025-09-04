@@ -88,6 +88,11 @@ if [[ $jq == "y" ]]; then
     )
 fi
 
+read -p "Install ollama? (y/n) " -n 1 ollama
+echo
+if [[ $ollama == "y" ]]; then
+    curl -fsSL https://ollama.com/install.sh | sh
+fi
 # PATH
 case :$PATH: in
     *:"$HOME/.local/usr/bin":*)

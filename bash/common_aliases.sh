@@ -59,7 +59,7 @@ dr () {
 }
 
 # z
-zj() {
+zz() {
   local dir
   dir="$(z -l "$@" \
         | awk '{ $1=""; sub(/^ /,""); print }' \
@@ -138,8 +138,7 @@ show-16-colors () {
 
 # git
 gc! () {
-	git commit --fixup HEAD~1
-	git rebase -i --autosquash HEAD~2
+    git commit --amend
 }
 checkout () {
     git checkout --recurse-submodules $1 && \
@@ -206,23 +205,30 @@ alias glga="git log --graph --all --decorate"
 alias glg="git log --graph --decorate"
 alias glg1="git log --graph --decorate --oneline"
 alias glga1="git log --graph --all --decorate --oneline"
+alias ga='git add'
+alias gau='git add -u'
 
 # manage aliases
 add-to-common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
 	source ~/dotfiles/bash/common_aliases.sh
-    load-shellrc
+    load-aliases
 }
 
 add-to-local () {
 	echo "$1" >> ~/scripts/bashrc.sh
 	source ~/dotfiles/bash/common_aliases.sh
-    load-shellrc
+    load-aliases
+}
+
+add-alias () {
+    echo "alias $1=\"$2\"" >> ~/dotfiles/bash/common_aliases.sh
+    load-aliases
 }
 
 open-common () {
 	$EDITOR ~/dotfiles/bash/common_aliases.sh
-    load-shellrc
+    load-aliases
 }
 
 open-bashrc () {
@@ -232,7 +238,18 @@ open-bashrc () {
 
 open-local () {
 	$EDITOR ~/scripts/bashrc.sh
+    load-aliases
+}
+
+open-install () {
+    $EDITOR ~/dotfiles/bash/install_plugins.sh
     load-shellrc
+}
+
+load-aliases () {
+    source ~/dotfiles/bash/common_aliases.sh
+    source ~/scripts/bashrc.sh
+    echo "Updated aliases."
 }
 
 load-shellrc () {
@@ -240,7 +257,7 @@ load-shellrc () {
         */bash) source ~/.bashrc;;
         */zsh) source ~/.zshrc;;
     esac
-    echo "Loaded shell rc file."
+    echo "Updated shell rc file."
 }
 
 list-aliases () {
