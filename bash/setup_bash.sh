@@ -2,14 +2,15 @@ mkdir -p ~/scripts
 touch ~/scripts/bashrc.sh
 
 echo """
+# shell-agnostic aliases
+[ -f ~/dotfiles/bash/common_aliases.sh ] && . ~/dotfiles/bash/common_aliases.sh
+
 # local
 [ -f ~/scripts/bashrc.sh ] && source ~/scripts/bashrc.sh
 
 # remote
 [ -f ~/dotfiles/bash/bashrc.sh ] && . ~/dotfiles/bash/bashrc.sh
 
-# shell-agnostic aliases
-[ -f ~/dotfiles/bash/common_aliases.sh ] && . ~/dotfiles/bash/common_aliases.sh
 """ >> ~/.bashrc
 
 # add keyphrases to ssh-agent
