@@ -203,11 +203,10 @@ alias gp="git push"
 alias gl="git log"
 alias glga="git log --graph --all --decorate"
 alias glg="git log --graph --decorate"
-alias glg1="git log --graph --decorate --oneline"
-alias glga1="git log --graph --all --decorate --oneline"
+alias glg1="git log --graph --decorate --date=short --pretty=format:'%C(auto)%h %Cgreen%ad%Creset %C(bold red)%d%Creset %s'"
+alias glga1="git log --graph --all --decorate --date=short --pretty=format:'%C(auto)%h %Cgreen%ad%Creset %C(bold red)%d%Creset %s'"
 alias ga='git add'
 alias gau='git add -u'
-
 # manage aliases
 add-to-common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
