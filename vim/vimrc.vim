@@ -6,6 +6,8 @@ syntax on
 set number
 set relativenumber
 
+"show search statistics messages
+set shortmess-=S
 
 set ignorecase
 set smartcase
