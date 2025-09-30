@@ -140,6 +140,16 @@ show-16-colors () {
 gc! () {
     git commit --amend
 }
+
+gc!! () {
+    git commit --amend --no-edit
+}
+
+gc!!! () {
+    git commit --amend --no-edit
+    git branch
+    confirm-msg "Forced push to remote branch?" && git push --force
+}
 checkout () {
     git checkout --recurse-submodules $1 && \
     dvc checkout
@@ -207,6 +217,9 @@ alias glg1="git log --graph --decorate --date=short --pretty=format:'%C(auto)%h 
 alias glga1="git log --graph --all --decorate --date=short --pretty=format:'%C(auto)%h %Cgreen%ad%Creset %C(bold red)%d%Creset %s'"
 alias ga='git add'
 alias gau='git add -u'
+glcb () {
+    glg1 --left-right HEAD...${1:-master}
+}
 # manage aliases
 add-to-common () {
 	echo "$1" >> ~/dotfiles/bash/common_aliases.sh
@@ -298,9 +311,29 @@ fi
 # others
 alias open-vimrc="$EDITOR ~/dotfiles/vim/vimrc.vim"
 run-in-tmux () {
-    tmux new $SHELL \; \
+    local name="$1"
+    shift
+    tmux new-session -s $name $SHELL \; \
         send-keys "$* |& tee run-in-tmux.log; test ${PIPESTATUS[0]} -eq 0" C-m
 }
 
+run-in-tmux-detached () {
+    local name="$1"
+    shift
+    tmux new-session -d -s $name $SHELL \; \
+        send-keys "$* |& tee run-in-tmux.log; test ${PIPESTATUS[0]} -eq 0" C-m
+}
+
+run-parallel-in-tmux () {
+    local name="${1?'Please provide the tmux session name'}"
+    shift
+	tmux attach-session -t "$name" \; \
+		split-window -h $SHELL \; \
+		send-keys "$*" C-m \; \
+        set-option mouse on
+}
+
+
 alias vless='vim -R -'
 
+alias show-path='echo $PATH | tr ":" "\n"'

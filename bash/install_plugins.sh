@@ -93,6 +93,13 @@ echo
 if [[ $ollama == "y" ]]; then
     curl -fsSL https://ollama.com/install.sh | sh
 fi
+
+read -p "Install Oh My Tmux? (y/n) " -n 1 omt
+echo
+if [[ $omt == "y" ]]; then
+    curl -fsSL "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)" | bash
+fi
+
 # PATH
 case :$PATH: in
     *:"$HOME/.local/usr/bin":*)
