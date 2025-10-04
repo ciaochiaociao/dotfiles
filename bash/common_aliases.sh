@@ -104,6 +104,8 @@ change-workdir () {
     cd $(cat ~/.workdir)
 }
 
+alias cwd=change-workdir
+
 # \e[38;5;?m for foreground 256 colors 
 # \e[48;5;?m for background
 show-256-colors () {
