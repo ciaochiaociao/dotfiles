@@ -336,4 +336,7 @@ run-parallel-in-tmux () {
 
 alias vless='vim -R -'
 
-alias show-path='echo $PATH | tr ":" "\n"'
+show-path () {
+    echo "${1:-$PATH}" | tr ":" "\n"
+}
+
