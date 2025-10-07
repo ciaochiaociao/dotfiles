@@ -100,6 +100,33 @@ if [[ $omt == "y" ]]; then
     curl -fsSL "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)" | bash
 fi
 
+read -p "Install bottom? (y/n) " -n 1 bottom
+echo
+if [[ $bottom == "y" ]]; then
+    (
+        source ~/.cargo/env
+        cargo install bottom
+    )
+fi
+
+read -p "Create tools env of conda? (y/n) " -n 1 conda_tools
+echo
+if [[ $conda_tools == "y" ]]; then
+    (
+        conda create -n tools
+        export PATH="$CONDA_PREFIX/bin:$PATH"
+    )
+fi
+
+read -p "Install btop? (y/n) " -n 1 btop
+echo
+if [[ $btop == "y" ]]; then
+    (
+        conda activate tools
+        mamba install btop
+    )
+fi
+
 # PATH
 case :$PATH: in
     *:"$HOME/.local/usr/bin":*)
