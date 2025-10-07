@@ -114,7 +114,7 @@ echo
 if [[ $conda_tools == "y" ]]; then
     (
         conda create -n tools
-        export PATH="$CONDA_PREFIX/bin:$PATH"
+        echo 'export PATH='"$CONDA_PREFIX"'/bin:$PATH' >> ~/.bashrc
     )
 fi
 
