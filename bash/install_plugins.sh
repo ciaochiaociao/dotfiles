@@ -127,6 +127,19 @@ if [[ $btop == "y" ]]; then
     )
 fi
 
+read -p "Instal atop? (y/n) " -n 1 atop
+echo
+if [[ $atop == "y" ]]; then
+    (
+        cd $HOME
+        wget https://www.atoptool.nl/download/atop-2.12.1.tar.gz
+        cd atop-2.12.1
+        make
+        mkdir -p ~/.local/bin
+        cp atop ~/.local/bin/
+    )
+fi
+
 # PATH
 case :$PATH: in
     *:"$HOME/.local/usr/bin":*)
