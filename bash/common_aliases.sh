@@ -10,10 +10,14 @@ alias .2="cd ../.."
 alias .3="cd ../../.."
 alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
-alias l="ls -aCF"
-alias ll="ls -laF"
-alias la="ls -A"
-alias ls="ls --color=auto -a"
+alias l="eza"
+alias ls="eza"
+alias ll="eza -lh --git"
+alias la="eza -lah --git"
+#alias l="ls -aCF"
+#alias ls="ls --color=auto -a"
+#alias ll="ls -laF"
+#alias la="ls -A"
 
 cdn () {
     pushd . 
@@ -237,7 +241,10 @@ add-to-local () {
 }
 
 add-alias () {
-    echo "alias $1=\"$2\"" >> ~/dotfiles/bash/common_aliases.sh
+    name=$1
+    shift
+    cmd="$*"
+    echo "alias $name='$cmd'" >> ~/dotfiles/bash/common_aliases.sh
     load-aliases
 }
 
@@ -346,3 +353,4 @@ show-path () {
 ff () {
     fd $@ | fzf
 }
+alias atop='atop 2> /dev/null'
