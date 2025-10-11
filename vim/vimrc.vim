@@ -58,3 +58,6 @@ set wildignore+=*.o,*.obj,*.pyc,*.git,*.swp
 "set wildmode=longest:full:full
 set completeopt=menu,menuone  " selectone is only available for neovim
 
+"terminal mode
+tnoremap <Esc> <C-\><C-n>
+"nnoremap <leader>t :belowright split | resize 12 | term<CR>

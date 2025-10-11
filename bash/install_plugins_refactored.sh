@@ -135,8 +135,8 @@ install_fselect() {
     install_cargo_package "fselect"
 }
 
-install_exa() {
-    install_cargo_package "exa"
+install_eza() {
+    install_cargo_package "eza"
 }
 
 install_lsd() {
@@ -145,6 +145,19 @@ install_lsd() {
 
 install_bat() {
     install_cargo_package "bat"
+    mkdir -p ~/.config/bat
+    bat --generate-config-file
+    echo 'export PAGER="bat"' >> ~/.bashrc
+    git config --global core.pager "bat --paging=always"
+    git config --global pager.diff "bat --diff"
+    git config --global pager.show "bat --diff"
+    cat >> ~/.config/bat <<-'EOF'
+--theme="TwoDark"
+--style="numbers,changes,header"
+--paging=auto
+EOF
+    echo 'export FZF_DEFAULT_COMMAND="fd --type f"'
+    echo 'export FZF_DEFAULT_OPTS="--preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window=right:60%"' >> ~/.bashrc
 }
 
 install_nnn() {
@@ -182,7 +195,7 @@ install_if_confirmed "htop" "install_htop"
 install_if_confirmed "atop" "install_atop"
 install_if_confirmed "ripgrep" "install_rg"
 install_if_confirmed "fselect" "install_fselect"
-install_if_confirmed "exa" "install_exa"
+install_if_confirmed "eza" "install_eza"
 install_if_confirmed "lsd" "install_lsd"
 install_if_confirmed "bat" "install_bat"
 install_if_confirmed "nnn" "install_nnn"
