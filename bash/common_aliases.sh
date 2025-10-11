@@ -343,3 +343,6 @@ show-path () {
     echo "${1:-$PATH}" | tr ":" "\n"
 }
 
+ff () {
+    fd $@ | fzf
+}
