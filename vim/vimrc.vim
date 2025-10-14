@@ -104,22 +104,22 @@ let g:startify_session_dir = '~/.vim/session'
 let g:python_highlight_all = 1
 
 " disable clipboard to make remote CLI vim faster
-set clipboard=
+" set clipboard=
 " OSC-52
-" if has("clipboard")
-"   set clipboard=unnamedplus
-" endif
+if has("clipboard")
+  set clipboard=unnamedplus
+endif
 
-" if executable('osc52.sh')
-"   let g:clipboard = {
-"         \ 'name': 'OSC52',
-"         \ 'copy': {
-"         \   '+': 'osc52.sh',
-"         \   '*': 'osc52.sh',
-"         \ },
-"         \ 'paste': {
-"         \   '+': 'pbpaste',
-"         \   '*': 'pbpaste',
-"         \ },
-"         \ }
-" endif
+if executable('osc52.sh')
+  let g:clipboard = {
+        \ 'name': 'OSC52',
+        \ 'copy': {
+        \   '+': 'osc52.sh',
+        \   '*': 'osc52.sh',
+        \ },
+        \ 'paste': {
+        \   '+': 'pbpaste',
+        \   '*': 'pbpaste',
+        \ },
+        \ }
+endif
