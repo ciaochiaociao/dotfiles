@@ -40,6 +40,7 @@ set autoindent
 
 
 "set mouse
+set mouse=a
 nnoremap <F2> :if &mouse == 'a' \| set mouse= \| else \| set mouse=a \| endif<CR>
 
 nnoremap <F3> :set wrap!<CR>
@@ -103,23 +104,16 @@ let g:startify_session_dir = '~/.vim/session'
 " syntax
 let g:python_highlight_all = 1
 
-" disable clipboard to make remote CLI vim faster
-" set clipboard=
-" OSC-52
-if has("clipboard")
-  set clipboard=unnamedplus
+" oscyank
+if !has('gui_running')
+  " yank in visual mode
+  nmap <leader>y <Plug>OSCYankOperator
+  nmap <leader>yy <leader>y_
+  vmap <leader>y <Plug>OSCYankVisual
+
+  " automatically copy all yanks
+  "  autocmd TextYankPost * if v:event.operator is 'y' | call OSCYankReg(v:event.regname) | endif
 endif
 
-if executable('osc52.sh')
-  let g:clipboard = {
-        \ 'name': 'OSC52',
-        \ 'copy': {
-        \   '+': 'osc52.sh',
-        \   '*': 'osc52.sh',
-        \ },
-        \ 'paste': {
-        \   '+': 'pbpaste',
-        \   '*': 'pbpaste',
-        \ },
-        \ }
-endif
+" tags
+set tags=./tags;
