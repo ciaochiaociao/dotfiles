@@ -1,4 +1,4 @@
-export EDITOR=vim
+export EDITOR="vim -X"
 # These common aliases should be shell-agnostic.
 
 # navigation
