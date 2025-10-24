@@ -94,7 +94,7 @@ jj() {
 
 # work dir
 projdir () {
-    cd $PROJDIR
+    cd $_PROJDIR
 }
 
 workdir () {
@@ -106,6 +106,12 @@ alias cdw=workdir
 change-workdir () {
     find $MYHOME -maxdepth 1 -type d | fzf | xargs realpath > ~/.workdir
     cd $(cat ~/.workdir)
+    export WORKDIR=$(cat ~/.workdir)
+}
+
+set-workdir () {
+    _dir=${1:-$(pwd)}
+    echo $_dir > ~/.workdir
     export WORKDIR=$(cat ~/.workdir)
 }
 
