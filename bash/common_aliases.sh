@@ -12,8 +12,8 @@ alias .4="cd ../../../.."
 alias .5="cd ../../../../.."
 alias l="eza"
 alias ls="eza"
-alias ll="eza -lh --git"
-alias la="eza -lah --git"
+alias ll="eza -lh"
+alias la="eza -lah"
 #alias l="ls -aCF"
 #alias ls="ls --color=auto -a"
 #alias ll="ls -laF"
@@ -67,7 +67,7 @@ zz() {
   local dir
   dir="$(z -l "$@" \
         | awk '{ $1=""; sub(/^ /,""); print }' \
-        | fzf)" || return
+        | fzf --tac)" || return
   [[ -n "$dir" ]] && builtin cd "$dir"
 }
 
@@ -215,6 +215,8 @@ alias gss='git status'
 alias gswr='git switch --recurse-submodules'
 alias gco='git checkout'
 alias gcor='git checkout --recurse-submodules'
+alias gpr='git pull --recurse-submodules'
+alias gcp='git cherry-pick'
 alias gd="git diff"
 alias gdrd='git diff --submodule=diff'
 alias gdr='git diff --submodule'
@@ -360,3 +362,9 @@ ff () {
     fd $@ | fzf
 }
 alias atop='atop 2> /dev/null'
+
+codediff () {
+    diff -qr $1 $2 | awk '{print $4}' | xargs -n 1 basename | xargs -I {} code --diff $1/{} $2/{}
+}
+
+alias pdb='python -m pdb --'

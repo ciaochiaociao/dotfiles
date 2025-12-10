@@ -38,14 +38,14 @@ fi
 
 if [[ "$SHELL" =~ .*/bash ]]; then
     if [ "$color_prompt" = yes ]; then
-        PS1='\[\033[01;37m\]${debian_chroot:+($debian_chroot)} \[\033[01;36m\] @\h \[\033[01;35m\]:\W $ \[\033[00m\]'
+        PS1='\[\033[01;37m\]${debian_chroot:+($debian_chroot)} \[\033[01;36m\] @\h: \[\033[01;35m\]\W $ \[\033[00m\]'
     else
-        PS1='${debian_chroot:+($debian_chroot)} @\h :\W\$ '
+        PS1='${debian_chroot:+($debian_chroot)} @\h: \W\$ '
     fi
     unset color_prompt force_color_prompt
     case "$TERM" in
         xterm*|rxvt*)
-            PS1=$'\[\e[37m\]${debian_chroot:+($debian_chroot)} \[\e[36m\] @\h \[\e[35m\]:\W $ \[\e[0m\]'
+            PS1=$'\[\e[37m\]${debian_chroot:+($debian_chroot)} \[\e[36m\] @\h: \[\e[35m\]\W $ \[\e[0m\]'
             ;;
         *)
             ;;
