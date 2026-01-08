@@ -48,6 +48,12 @@ install_miniforge() {
     bash Miniforge3-$(uname)-$(uname -m).sh -b
     rm Miniforge3-$(uname)-$(uname -m).sh
     ~/miniforge3/bin/conda init bash
+    
+    # Check if conda profile exists and source it to make conda/mamba available immediately
+    if [ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/miniforge3/etc/profile.d/conda.sh"
+        conda activate base
+    fi
 }
 
 install_rust() {
