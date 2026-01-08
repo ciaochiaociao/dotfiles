@@ -4,6 +4,12 @@
 install_if_confirmed() {
     local tool_name="$1"
     local install_function="$2"
+    local check_cmd="$3"
+    
+    if [[ -n "$check_cmd" ]] && command -v "$check_cmd" &> /dev/null; then
+        echo "$tool_name is already installed ('$check_cmd' found). Skipping."
+        return
+    fi
     
     read -p "Install $tool_name? (y/n) " -n 1 response
     echo
@@ -186,29 +192,29 @@ setup_local_path() {
 if ! command -v conda &> /dev/null; then
     install_if_confirmed "Miniforge" "install_miniforge"
 fi
-install_if_confirmed "fzf" "install_fzf"
-install_if_confirmed "Linux Homebrew" "install_homebrew"
-install_if_confirmed "Rust / Cargo" "install_rust"
-install_if_confirmed "aichat" "install_aichat"
+install_if_confirmed "fzf" "install_fzf" "fzf"
+install_if_confirmed "Linux Homebrew" "install_homebrew" "brew"
+install_if_confirmed "Rust / Cargo" "install_rust" "cargo"
+install_if_confirmed "aichat" "install_aichat" "aichat"
 install_if_confirmed "z" "install_z"
-install_if_confirmed "autojump" "install_autojump"
+install_if_confirmed "autojump" "install_autojump" "autojump"
 # TODO: zoxide
 # TODO: bashmarks
-install_if_confirmed "fd" "install_fd"
-install_if_confirmed "jq" "install_jq"
-install_if_confirmed "ollama" "install_ollama"
+install_if_confirmed "fd" "install_fd" "fd"
+install_if_confirmed "jq" "install_jq" "jq"
+install_if_confirmed "ollama" "install_ollama" "ollama"
 install_if_confirmed "Oh My Tmux" "install_oh_my_tmux"
-install_if_confirmed "bottom" "install_bottom"
+install_if_confirmed "bottom" "install_bottom" "btm"
 install_if_confirmed "tools env of conda" "install_conda_tools"
-install_if_confirmed "btop" "install_btop"
-install_if_confirmed "htop" "install_htop"
-install_if_confirmed "atop" "install_atop"
-install_if_confirmed "ripgrep" "install_rg"
-install_if_confirmed "fselect" "install_fselect"
-install_if_confirmed "eza" "install_eza"
-install_if_confirmed "lsd" "install_lsd"
-install_if_confirmed "bat" "install_bat"
-install_if_confirmed "nnn" "install_nnn"
+install_if_confirmed "btop" "install_btop" "btop"
+install_if_confirmed "htop" "install_htop" "htop"
+install_if_confirmed "atop" "install_atop" "atop"
+install_if_confirmed "ripgrep" "install_rg" "rg"
+install_if_confirmed "fselect" "install_fselect" "fselect"
+install_if_confirmed "eza" "install_eza" "eza"
+install_if_confirmed "lsd" "install_lsd" "lsd"
+install_if_confirmed "bat" "install_bat" "bat"
+install_if_confirmed "nnn" "install_nnn" "nnn"
 
 # Setup PATH
 setup_local_path
