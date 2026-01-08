@@ -37,6 +37,13 @@ install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
 
+install_miniforge() {
+    wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+    bash Miniforge3-$(uname)-$(uname -m).sh -b
+    rm Miniforge3-$(uname)-$(uname -m).sh
+    ~/miniforge3/bin/conda init bash
+}
+
 install_rust() {
     cargo || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 }
@@ -176,6 +183,9 @@ setup_local_path() {
 }
 
 # Main installation prompts
+if ! command -v conda &> /dev/null; then
+    install_if_confirmed "Miniforge" "install_miniforge"
+fi
 install_if_confirmed "fzf" "install_fzf"
 install_if_confirmed "Linux Homebrew" "install_homebrew"
 install_if_confirmed "Rust / Cargo" "install_rust"
