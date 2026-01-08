@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Tracking arrays for installation report
+SUMMARY_INSTALLED=()
+SUMMARY_SKIPPED=()
+SUMMARY_FAILED=()
+
 # Utility function to prompt user and execute installation function
 install_if_confirmed() {
     local tool_name="$1"
@@ -8,13 +13,20 @@ install_if_confirmed() {
     
     if [[ -n "$check_cmd" ]] && command -v "$check_cmd" &> /dev/null; then
         echo "$tool_name is already installed ('$check_cmd' found). Skipping."
+        SUMMARY_INSTALLED+=("$tool_name (already present)")
         return
     fi
     
     read -p "Install $tool_name? (y/n) " -n 1 response
     echo
     if [[ $response == "y" ]]; then
-        $install_function
+        if $install_function; then
+             SUMMARY_INSTALLED+=("$tool_name (newly installed)")
+        else
+             SUMMARY_FAILED+=("$tool_name")
+        fi
+    else
+        SUMMARY_SKIPPED+=("$tool_name (skipped by user)")
     fi
 }
 
@@ -176,7 +188,7 @@ install_bat() {
 --paging=auto
 EOF
     echo 'export FZF_DEFAULT_COMMAND="fd --type f"'
-    echo 'export FZF_DEFAULT_OPTS="--preview 'bat --style=numbers --color=always --line-range :500 {}' --preview-window=right:60%"' >> ~/.bashrc
+    echo 'export FZF_DEFAULT_OPTS="--preview '\''bat --style=numbers --color=always --line-range :500 {}'\'' --preview-window=right:60%"' >> ~/.bashrc
 }
 
 install_nnn() {
@@ -195,9 +207,7 @@ setup_local_path() {
 }
 
 # Main installation prompts
-if ! command -v conda &> /dev/null; then
-    install_if_confirmed "Miniforge" "install_miniforge"
-fi
+install_if_confirmed "Miniforge" "install_miniforge" "conda"
 install_if_confirmed "fzf" "install_fzf" "fzf"
 install_if_confirmed "Linux Homebrew" "install_homebrew" "brew"
 install_if_confirmed "Rust / Cargo" "install_rust" "cargo"
@@ -224,3 +234,31 @@ install_if_confirmed "nnn" "install_nnn" "nnn"
 
 # Setup PATH
 setup_local_path
+
+echo
+echo "========================================"
+echo "Installation Report"
+echo "========================================"
+if [ ${#SUMMARY_INSTALLED[@]} -gt 0 ]; then
+    echo "Installed / Present:"
+    for item in "${SUMMARY_INSTALLED[@]}"; do
+        echo "  - $item"
+    done
+fi
+
+if [ ${#SUMMARY_SKIPPED[@]} -gt 0 ]; then
+    echo
+    echo "Skipped:"
+    for item in "${SUMMARY_SKIPPED[@]}"; do
+        echo "  - $item"
+    done
+fi
+
+if [ ${#SUMMARY_FAILED[@]} -gt 0 ]; then
+    echo
+    echo "Failed:"
+    for item in "${SUMMARY_FAILED[@]}"; do
+        echo "  - $item"
+    done
+fi
+echo "========================================"
