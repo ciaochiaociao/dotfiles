@@ -24,6 +24,10 @@ echo """
 source ~/dotfiles/vim/vimrc.vim
 """ >> ~/.vimrc
 
+echo "Installing vim plugins..."
+bash ~/dotfiles/vim/install_plugins.sh
+echo "Vim plugins installed."
+
 read -p "What is your project directory? " PROJDIR
 if [[ PROJDIR != "" ]]; then
     echo "export PROJDIR=$PROJDIR" >> ~/scripts/bashrc.sh
