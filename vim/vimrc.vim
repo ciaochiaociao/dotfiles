@@ -115,5 +115,18 @@ if !has('gui_running')
   "  autocmd TextYankPost * if v:event.operator is 'y' | call OSCYankReg(v:event.regname) | endif
 endif
 
+" ripgrep
+if executable('rg')
+    set grepprg=rg\ --vimgrep\ --smart-case
+    set grepformat=%f:%l:%c:%m
+endif
+
 " tags
-set tags=./tags;
+set tags=./tags;,tags;
+
+" fold
+augroup FileTypeFolds
+    autocmd FileType python setlocal foldmethod=indent foldlevel=99
+    autocmd FileType c,cpp setlocal foldmethod=syntax foldlevel=1
+    set foldenable
+augroup END

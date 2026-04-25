@@ -1,0 +1,18 @@
+# --- General ---
+--recurse=yes
+--exclude=@.gitignore
+--fields=+iaS
+--extras=+q
+
+# --- C / C++ ---
+--languages=C,C++
+--c++-kinds=+p
+
+# --- Python ---
+--languages+=Python
+--python-kinds=+cfm
+
+# --- Protobuf ---
+--languages+=Proto
+--proto-kinds=+m
+
