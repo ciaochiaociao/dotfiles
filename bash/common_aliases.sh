@@ -32,6 +32,13 @@ cdu () {
     cd "${PWD%/$1/*}/$1"
 }
 
+cdf () {
+    cd "$(
+      fd -t d |
+      fzf --tac --preview 'tree -C {} | head -200'
+    )"
+}
+
 # pushd, popd, dirs
 alias po="popd"
 pd () {
@@ -367,4 +374,44 @@ codediff () {
     diff -qr $1 $2 | awk '{print $4}' | xargs -n 1 basename | xargs -I {} code --diff $1/{} $2/{}
 }
 
+start-ssh-agent() {
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_ecdsa
+}
+
 alias pdb='python -m pdb --'
+
+# claude code
+alias cc='claude'
+alias ccc='claude -c'                                    # continue last conversation
+alias ccr='claude -r'
+alias ccp='claude -p'                                    # print mode (non-interactive, pipe-friendly)
+alias ccpj='claude -p --output-format json'              # print mode with JSON output
+alias ccplan='claude --permission-mode plan'              # start in plan mode
+alias ccdontask='claude --permission-mode dontAsk'        # skip permission prompts
+alias ccop='claude --model opus'                          # use opus model
+alias ccson='claude --model sonnet'                       # use sonnet model
+alias cch='claude --model haiku'                          # use haiku model
+alias ccv='claude --verbose'                              # verbose output
+alias ccbare='claude --bare'                              # minimal/fast startup
+
+# claude code with piping
+ccf () {
+    # ask claude about a file: ccf main.py "explain this"
+    cat "$1" | claude -p "${2:-explain this code}"
+}
+
+ccdiff () {
+    # ask claude to review staged changes
+    git diff --staged | claude -p "${1:-review this diff for bugs and suggest improvements}"
+}
+
+cclog () {
+    # ask claude to summarize recent git log
+    git log --oneline -20 | claude -p "${1:-summarize these recent commits}"
+}
+
+ccfix () {
+    # ask claude to fix a file: ccfix main.py "fix the bug in function X"
+    claude -p "$(cat "$1")" <<< "${2:-fix any bugs in the above code}"
+}
