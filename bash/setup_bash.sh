@@ -28,6 +28,12 @@ echo "Installing vim plugins..."
 bash ~/dotfiles/vim/install_plugins.sh
 echo "Vim plugins installed."
 
+read -p "Install Nerd Fonts and configure xterm? (y/n) " -n 1 font_response
+echo
+if [[ $font_response == "y" ]]; then
+    bash ~/dotfiles/bash/install_fonts.sh
+fi
+
 read -p "What is your project directory? " PROJDIR
 if [[ PROJDIR != "" ]]; then
     echo "export PROJDIR=$PROJDIR" >> ~/scripts/bashrc.sh
