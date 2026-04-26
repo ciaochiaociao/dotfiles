@@ -75,6 +75,10 @@ require("lazy").setup({
         },
     },
     {
+        "mrjones2014/smart-splits.nvim",
+        lazy = false,
+    },
+    {
         "christoomey/vim-tmux-navigator",
         lazy = false,
         cmd = {
@@ -182,6 +186,7 @@ map("i", "<C-l>", "<Right>")
 
 -- Resize mode: <leader>r enters mode, then hjkl repeats; q or Esc exits
 map("n", "<leader>r", function()
+    local ss = require("smart-splits")
     vim.api.nvim_echo({ { "-- RESIZE -- (hjkl to resize, q/Esc to exit)", "ModeMsg" } }, false, {})
     while true do
         local ok, c = pcall(vim.fn.getcharstr)
@@ -189,19 +194,20 @@ map("n", "<leader>r", function()
             vim.api.nvim_echo({ { "" } }, false, {})
             return
         end
-        if     c == "h" then vim.cmd("vertical resize -2")
-        elseif c == "l" then vim.cmd("vertical resize +2")
-        elseif c == "j" then vim.cmd("resize -2")
-        elseif c == "k" then vim.cmd("resize +2")
+        if     c == "h" then ss.resize_left()
+        elseif c == "l" then ss.resize_right()
+        elseif c == "j" then ss.resize_down()
+        elseif c == "k" then ss.resize_up()
         end
         vim.cmd("redraw")
     end
 end, { desc = "Resize mode" })
 
-map("n", "<S-Up>",    ":resize +2<CR>")
-map("n", "<S-Down>",  ":resize -2<CR>")
-map("n", "<S-Left>",  ":vertical resize -2<CR>")
-map("n", "<S-Right>", ":vertical resize +2<CR>")
+-- Direction-aware resize (smart-splits): pushes the correct edge based on neighbors
+map("n", "<M-h>", function() require("smart-splits").resize_left()  end)
+map("n", "<M-j>", function() require("smart-splits").resize_down()  end)
+map("n", "<M-k>", function() require("smart-splits").resize_up()    end)
+map("n", "<M-l>", function() require("smart-splits").resize_right() end)
 
 -- Toggle mouse
 map("n", "<F2>", function()
@@ -227,6 +233,9 @@ map("n", "<leader>ff", builtin.find_files)
 map("n", "<leader>fg", builtin.live_grep)
 map("n", "<leader>fb", builtin.buffers)
 map("n", "<leader>fh", builtin.help_tags)
+map("n", "<leader>f~", function()
+    builtin.find_files({ cwd = "~" })
+end)
 
 -- neo-tree (disable netrw so neo-tree handles directory opens)
 vim.g.loaded_netrw = 1
