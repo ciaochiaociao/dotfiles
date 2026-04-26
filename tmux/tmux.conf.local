@@ -393,6 +393,9 @@ set-option -g repeat-time 1000
 # DISPLAY SSH_ASKPASS SSH_AUTH_SOCK SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY)
 set-option -ga update-environment " PATH"
 
+# reduce delay after Esc (default 500ms is laggy; 10ms keeps Alt-key detection robust)
+set -sg escape-time 10
+
 # start with mouse mode enabled
 set -g mouse on
 
@@ -538,6 +541,12 @@ bind-key -T copy-mode-vi 'C-j' select-pane -D
 bind-key -T copy-mode-vi 'C-k' select-pane -U
 bind-key -T copy-mode-vi 'C-l' select-pane -R
 bind-key -T copy-mode-vi 'C-\' select-pane -l
+
+# -- Smart pane resize: vim handles M-hjkl when in vim, else tmux resizes panes
+bind-key -n 'M-h' if-shell "$is_vim" 'send-keys M-h' 'resize-pane -L 2'
+bind-key -n 'M-j' if-shell "$is_vim" 'send-keys M-j' 'resize-pane -D 2'
+bind-key -n 'M-k' if-shell "$is_vim" 'send-keys M-k' 'resize-pane -U 2'
+bind-key -n 'M-l' if-shell "$is_vim" 'send-keys M-l' 'resize-pane -R 2'
 
 # -- Adapt to the largest client size to fix the broken layout after resizing
 set -g window-size largest
