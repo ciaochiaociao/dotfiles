@@ -1,3 +1,7 @@
+-- Leader keys must be set before lazy.nvim loads (plugin keymaps capture leader at definition time)
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 vim.opt.rtp:prepend(lazypath)
 
@@ -175,6 +179,29 @@ map("i", "<C-h>", "<Left>")
 map("i", "<C-j>", "<Down>")
 map("i", "<C-k>", "<Up>")
 map("i", "<C-l>", "<Right>")
+
+-- Resize mode: <leader>r enters mode, then hjkl repeats; q or Esc exits
+map("n", "<leader>r", function()
+    vim.api.nvim_echo({ { "-- RESIZE -- (hjkl to resize, q/Esc to exit)", "ModeMsg" } }, false, {})
+    while true do
+        local ok, c = pcall(vim.fn.getcharstr)
+        if not ok or c == "q" or c == "\27" then
+            vim.api.nvim_echo({ { "" } }, false, {})
+            return
+        end
+        if     c == "h" then vim.cmd("vertical resize -2")
+        elseif c == "l" then vim.cmd("vertical resize +2")
+        elseif c == "j" then vim.cmd("resize -2")
+        elseif c == "k" then vim.cmd("resize +2")
+        end
+        vim.cmd("redraw")
+    end
+end, { desc = "Resize mode" })
+
+map("n", "<S-Up>",    ":resize +2<CR>")
+map("n", "<S-Down>",  ":resize -2<CR>")
+map("n", "<S-Left>",  ":vertical resize -2<CR>")
+map("n", "<S-Right>", ":vertical resize +2<CR>")
 
 -- Toggle mouse
 map("n", "<F2>", function()
