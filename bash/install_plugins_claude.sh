@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Tool list — edit this to add/remove tools
 TOOLS="
-- Neovim: modern Vim fork with Lua scripting, built-in LSP, and async plugin support. The foundation for the dotfiles' init.lua config (lazy.nvim, telescope, treesitter, mason). Install via brew (macOS) or apt/dnf (Linux).
+- Neovim: modern Vim fork with Lua scripting, built-in LSP, and async plugin support. The foundation for the dotfiles' init.lua config (lazy.nvim, telescope, treesitter, mason). Install via brew.
 - Miniforge: conda/mamba package manager — manages Python environments and installs pre-built binary packages. Foundation for the 'tools' conda env below. Install via official shell installer.
 - fzf: general-purpose fuzzy finder — interactive filtering for files, command history, git branches, etc. Powers Ctrl-R history search and file pickers. Install via git clone to ~/.fzf.
 - Homebrew: cross-platform package manager — works on macOS and Linux. Useful fallback when cargo/mamba don't have a package. Install via official script.
@@ -29,7 +29,7 @@ TOOLS="
 - Conda tools env: dedicated conda environment for mamba-installed CLI tools — keeps tool binaries isolated from your base Python environment. Prerequisite for btop/htop/nnn below.
 - btop: resource monitor with a polished TUI — shows CPU, memory, disks, network, and processes with a modern UI. More visual than htop. Install via mamba into tools env.
 - htop: interactive process viewer — classic 'top' replacement with color, scrolling, tree view, and mouse support. Install via mamba into tools env.
-- atop: advanced system monitor with history — records system-level metrics (CPU, memory, disk I/O, network) over time for post-mortem analysis. Install via brew (macOS) or build from source (Linux).
+- atop: advanced system monitor with history — records system-level metrics (CPU, memory, disk I/O, network) over time for post-mortem analysis. Linux-only (requires /proc and kernel process accounting). Install via build from source on Linux; skip on macOS.
 - ripgrep: extremely fast recursive grep (command: rg) — respects .gitignore, searches compressed files, supports PCRE2 regex. 10-100x faster than grep on large codebases. Install via cargo.
 - fselect: SQL-like file finder — query files with SQL syntax (e.g. 'fselect name, size from . where size > 1M'). Useful for complex file searches. Install via cargo.
 - eza: modern ls replacement — colorized output, git status integration, tree view, icons. Actively maintained fork of exa. Install via cargo.
@@ -60,12 +60,21 @@ ${TOOLS}
 5. At the end, show a summary of what was installed, uninstalled, and any failures.
 
 ## Platform rules
-- On macOS: prefer brew for system tools (jq, atop), curl over wget
-- On Linux: use apt/dnf/yum as available, or build from source
+- Before installing anything, ask the user if they have root (sudo) privileges on this machine
+- If the user HAS root: apt/dnf/brew/sudo are all fine
+- If the user does NOT have root: only use userspace install methods:
+  - brew (linuxbrew works without root)
+  - cargo install (installs to ~/.cargo/bin)
+  - mamba/conda (installs into conda environments)
+  - curl/wget binary to ~/.local/bin
+  - git clone + build to ~/.local
+  - pip install --user
+- On macOS: prefer brew, curl over wget
 - For Rust tools: use 'cargo install <package>'
 - For conda/mamba tools: install into the 'tools' conda environment
 - Shell config lines go into the correct RC file (~/.bashrc or ~/.zshrc)
 - Prefer ~/.local for manual installs (keeps \$HOME clean)
+- Always check if a tool is already installed before attempting to install it
 - Always verify after install: run the command or check the path
 
 ## Important
@@ -75,4 +84,4 @@ ${TOOLS}
 
 exec claude --system-prompt "$SYSTEM_PROMPT" \
     --allowedTools "Bash" \
-    "Scan my system and show me the plugin status table. Then ask what I'd like to install or uninstall."
+    "First ask me if I have root/sudo privileges on this machine. Then scan my system and show me the plugin status table. Then ask what I'd like to install or uninstall."
