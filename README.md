@@ -22,9 +22,9 @@ bash setup.sh
 
 ```bash
 # Interactive batch installer (select by number, supports install + uninstall)
-bash bash/install_plugins_refactored.sh
+bash bash/install_plugins.sh
 
-# Claude-powered installer (requires claude CLI)
+# Claude-powered installer (requires claude CLI — delegates to Claude as the UI)
 bash bash/install_plugins_claude.sh
 ```
 
@@ -35,8 +35,7 @@ setup.sh                          # Unified entry point
 bash/
   common_aliases.sh               # Shell-agnostic aliases (sourced by bash and zsh)
   bashrc.sh                       # Bash-specific config (prompt, history, completion)
-  setup_bash.sh                   # Legacy bash-only setup
-  install_plugins_refactored.sh   # Batch CLI tool installer
+  install_plugins.sh              # Batch CLI tool installer (install + uninstall)
   install_plugins_claude.sh       # Claude-powered CLI tool installer
   install_fonts.sh                # Nerd Fonts installer (Linux)
 vim/
@@ -52,6 +51,6 @@ legacy/
   setup_bash.sh                   # Old bash-only setup (replaced by setup.sh)
   setup_zsh.sh                    # Old zsh-only setup (replaced by setup.sh)
   setup_vim                       # Old apt-based vim installer
-  install_plugins.sh              # Old one-by-one plugin installer (replaced by _refactored.sh)
+  install_plugins.sh              # Old one-by-one plugin installer
   install_vim.md                  # Build vim from source instructions
 ```

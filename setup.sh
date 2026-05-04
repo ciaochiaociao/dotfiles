@@ -225,14 +225,14 @@ fi
 step "CLI tools"
 
 echo "Choose how to install CLI tools:"
-echo "  1) Interactive batch installer (install_plugins_refactored.sh)"
+echo "  1) Interactive batch installer (install_plugins.sh)"
 echo "  2) Claude-powered installer (requires claude CLI)"
 echo "  3) Skip"
 read -p "Choice [1/2/3]: " -n 1 tools_choice
 echo
 
 case "$tools_choice" in
-    1) bash "$DOTFILES/bash/install_plugins_refactored.sh" ;;
+    1) bash "$DOTFILES/bash/install_plugins.sh" ;;
     2) bash "$DOTFILES/bash/install_plugins_claude.sh" ;;
     3) echo "Skipping CLI tools." ;;
     *) echo "Invalid choice. Skipping." ;;
@@ -263,5 +263,5 @@ echo "  1. Restart your shell or run: source $SHELLRC"
 [[ -d "$NVIM_CONFIG_DIR" ]] && echo "  2. Run 'nvim' to install plugins via lazy.nvim"
 echo
 echo "To install/manage CLI tools later:"
-echo "  bash $DOTFILES/bash/install_plugins_refactored.sh"
+echo "  bash $DOTFILES/bash/install_plugins.sh"
 echo "  bash $DOTFILES/bash/install_plugins_claude.sh"
