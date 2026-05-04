@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# Detect OS and shell
+OS="$(uname -s)"
+ARCH="$(uname -m)"
+CURRENT_SHELL="$(basename "$SHELL")"
+SHELLRC="$HOME/.${CURRENT_SHELL}rc"  # ~/.bashrc or ~/.zshrc
+
+# Portable download helper: prefer curl (available on macOS+Linux), fall back to wget
+download() {
+    local url="$1"
+    local output="$2"
+    if command -v curl &>/dev/null; then
+        if [[ -n "$output" ]]; then
+            curl -fsSL -o "$output" "$url"
+        else
+            curl -fsSL "$url"
+        fi
+    elif command -v wget &>/dev/null; then
+        if [[ -n "$output" ]]; then
+            wget -q -O "$output" "$url"
+        else
+            wget -q -O- "$url"
+        fi
+    else
+        echo "Error: neither curl nor wget found" >&2
+        return 1
+    fi
+}
+
 # Tracking arrays for installation report
 SUMMARY_INSTALLED=()
 SUMMARY_SKIPPED=()
@@ -51,7 +79,7 @@ install_if_confirmed() {
 install_cargo_package() {
     local package="$1"
     (
-        source ~/.cargo/env
+        [[ -f ~/.cargo/env ]] && source ~/.cargo/env
         cargo install "$package"
     )
 }
@@ -59,7 +87,7 @@ install_cargo_package() {
 # Mamba-based installation helper (for tools conda environment)
 install_mamba_package() {
     local package="$1"
-    mamba install -n tools "$package"
+    mamba install -n tools -y "$package"
 }
 
 # Installation functions for each tool
@@ -69,16 +97,22 @@ install_fzf() {
 }
 
 install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    /bin/bash -c "$(download https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Linux Homebrew needs PATH setup
+    if [[ "$OS" == "Linux" && -d /home/linuxbrew/.linuxbrew ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$SHELLRC"
+    fi
 }
 
 install_miniforge() {
-    wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-    bash Miniforge3-$(uname)-$(uname -m).sh -b
-    rm Miniforge3-$(uname)-$(uname -m).sh
-    ~/miniforge3/bin/conda init bash
-    
-    # Check if conda profile exists and source it to make conda/mamba available immediately
+    local installer="Miniforge3-${OS}-${ARCH}.sh"
+    download "https://github.com/conda-forge/miniforge/releases/latest/download/${installer}" "$installer"
+    bash "$installer" -b
+    rm -f "$installer"
+    ~/miniforge3/bin/conda init "$CURRENT_SHELL"
+
+    # Source conda to make conda/mamba available immediately
     if [ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]; then
         . "$HOME/miniforge3/etc/profile.d/conda.sh"
         conda activate base
@@ -86,7 +120,7 @@ install_miniforge() {
 }
 
 install_rust() {
-    cargo || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    command -v cargo &>/dev/null || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 }
 
 install_aichat() {
@@ -95,7 +129,7 @@ install_aichat() {
 
 install_z() {
     git clone https://github.com/rupa/z.git ~/z
-    echo '. ~/z/z.sh' >> ~/.bashrc
+    echo '. ~/z/z.sh' >> "$SHELLRC"
 }
 
 install_autojump() {
@@ -108,7 +142,7 @@ install_autojump() {
             git clone https://github.com/wting/autojump.git ~/.autojump
             cd ~/.autojump
             ./install.py
-            cat >> ~/.bashrc <<-'EOF'
+            cat >> "$SHELLRC" <<-'EOF'
 [[ -s ~/.local/etc/profile.d/autojump.sh ]] && \
   . ~/.local/etc/profile.d/autojump.sh
 EOF
@@ -121,27 +155,32 @@ install_fd() {
 }
 
 install_jq() {
-    (
-        mkdir -p ~/.local
-        cd ~/.local
-        if command -v dpkg > /dev/null 2>&1 && \
-            command -v apt > /dev/null 2>&1; then
-            apt download jq
-            dpkg -x jq_*_$(dpkg --print-architecture).deb .
-        fi
-        if command -v yum > /dev/null 2>&1; then
-            yum download jq
-            rpm2cpio jq_*.rpm | cpio -idmv
-        fi
-    )
+    if [[ "$OS" == "Darwin" ]]; then
+        brew install jq
+    else
+        (
+            mkdir -p ~/.local
+            cd ~/.local
+            if command -v dpkg &>/dev/null && command -v apt &>/dev/null; then
+                apt download jq
+                dpkg -x jq_*_$(dpkg --print-architecture).deb .
+            elif command -v yum &>/dev/null; then
+                yum download jq
+                rpm2cpio jq_*.rpm | cpio -idmv
+            else
+                echo "No supported package manager found for jq" >&2
+                return 1
+            fi
+        )
+    fi
 }
 
 install_ollama() {
-    curl -fsSL https://ollama.com/install.sh | sh
+    download https://ollama.com/install.sh | sh
 }
 
 install_oh_my_tmux() {
-    curl -fsSL "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)" | bash
+    download "https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)" | bash
 }
 
 install_bottom() {
@@ -150,8 +189,8 @@ install_bottom() {
 
 install_conda_tools() {
     (
-        conda create -n tools
-        echo 'export PATH='"$CONDA_PREFIX"'/bin:$PATH' >> ~/.bashrc
+        conda create -n tools -y
+        echo 'export PATH="$HOME/miniforge3/envs/tools/bin:$PATH"' >> "$SHELLRC"
     )
 }
 
@@ -164,15 +203,22 @@ install_htop() {
 }
 
 install_atop() {
-    (
-        cd $HOME
-        wget https://www.atoptool.nl/download/atop-2.12.1.tar.gz
-        tar -xzf atop-2.12.1.tar.gz
-        cd atop-2.12.1
-        make
-        mkdir -p ~/.local/bin
-        cp atop ~/.local/bin/
-    )
+    if [[ "$OS" == "Darwin" ]]; then
+        brew install atop
+    else
+        (
+            cd "$HOME"
+            local version="2.12.1"
+            download "https://www.atoptool.nl/download/atop-${version}.tar.gz" "atop-${version}.tar.gz"
+            tar -xzf "atop-${version}.tar.gz"
+            cd "atop-${version}"
+            make
+            mkdir -p ~/.local/bin
+            cp atop ~/.local/bin/
+            cd "$HOME"
+            rm -rf "atop-${version}" "atop-${version}.tar.gz"
+        )
+    fi
 }
 
 install_rg() {
@@ -195,17 +241,17 @@ install_bat() {
     install_cargo_package "bat"
     mkdir -p ~/.config/bat
     bat --generate-config-file
-    echo 'export PAGER="bat"' >> ~/.bashrc
+    echo 'export PAGER="bat"' >> "$SHELLRC"
     git config --global core.pager "bat --paging=always"
     git config --global pager.diff "bat --diff"
     git config --global pager.show "bat --diff"
-    cat >> ~/.config/bat <<-'EOF'
+    cat >> ~/.config/bat/config <<-'EOF'
 --theme="TwoDark"
 --style="numbers,changes,header"
 --paging=auto
 EOF
-    echo 'export FZF_DEFAULT_COMMAND="fd --type f"'
-    echo 'export FZF_DEFAULT_OPTS="--preview '\''bat --style=numbers --color=always --line-range :500 {}'\'' --preview-window=right:60%"' >> ~/.bashrc
+    echo 'export FZF_DEFAULT_COMMAND="fd --type f"' >> "$SHELLRC"
+    echo 'export FZF_DEFAULT_OPTS="--preview '\''bat --style=numbers --color=always --line-range :500 {}'\'' --preview-window=right:60%"' >> "$SHELLRC"
 }
 
 install_nnn() {
@@ -226,7 +272,7 @@ setup_local_path() {
 # Main installation prompts
 install_if_confirmed "Miniforge" "install_miniforge" "conda"
 install_if_confirmed "fzf" "install_fzf" "fzf"
-install_if_confirmed "Linux Homebrew" "install_homebrew" "brew"
+install_if_confirmed "Homebrew" "install_homebrew" "brew"
 install_if_confirmed "Rust / Cargo" "install_rust" "cargo"
 install_if_confirmed "aichat" "install_aichat" "aichat"
 install_if_confirmed "z" "install_z" "~/z"
