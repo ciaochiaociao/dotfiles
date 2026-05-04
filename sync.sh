@@ -16,7 +16,10 @@ if [[ ! -f "$HOSTS_FILE" ]]; then
     exit 1
 fi
 
-mapfile -t HOSTS < <(grep -v '^\s*#' "$HOSTS_FILE" | grep -v '^\s*$')
+HOSTS=()
+while IFS= read -r line; do
+    HOSTS+=("$line")
+done < <(grep -v '^\s*#' "$HOSTS_FILE" | grep -v '^\s*$')
 
 if [[ ${#HOSTS[@]} -eq 0 ]]; then
     echo "$(red "Error:") No hosts defined in $HOSTS_FILE"
@@ -48,7 +51,7 @@ echo "── Pull on remotes ──"
 failed=()
 for host in "${HOSTS[@]}"; do
     printf "  %-30s " "$host"
-    if output=$(ssh -o ConnectTimeout=10 "$host" \
+    if output=$(ssh -A -o ConnectTimeout=10 "$host" \
         "cd $REMOTE_DIR && git pull --ff-only" 2>&1); then
         if echo "$output" | grep -q "Already up to date"; then
             echo "$(dim "up to date")"
