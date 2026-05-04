@@ -1,0 +1,55 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Agent",
+      "Bash(* git status)",
+      "Bash(git status)",
+      "Bash(* git diff*)",
+      "Bash(git diff*)",
+      "Bash(* git log*)",
+      "Bash(git log*)",
+      "Bash(* git branch*)",
+      "Bash(git branch*)",
+      "Bash(* grep *)",
+      "Bash(grep *)",
+      "Bash(* rg *)",
+      "Bash(rg *)",
+      "Bash(* cat *)",
+      "Bash(cat *)",
+      "Bash(* head *)",
+      "Bash(head *)",
+      "Bash(* tail *)",
+      "Bash(tail *)",
+      "Bash(* wc *)",
+      "Bash(wc *)",
+      "Bash(* ls *)",
+      "Bash(ls *)",
+      "Bash(* ls)",
+      "Bash(ls)",
+      "Bash(* find *)",
+      "Bash(find *)"
+    ],
+    "deny": [
+      "Bash(* find *-delete*)",
+      "Bash(find *-delete*)",
+      "Bash(* find * -exec*)",
+      "Bash(find * -exec*)"
+    ]
+  },
+  "model": "claude-opus-4-7",
+  "alwaysThinkingEnabled": false,
+  "skipAutoPermissionPrompt": true,
+  "skipDangerousModePermissionPrompt": true,
+  "thinking": {
+    "type": "adaptive"
+  },
+  "preferences": {
+    "tmuxSplitPanes": true
+  },
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true
+  }
+}

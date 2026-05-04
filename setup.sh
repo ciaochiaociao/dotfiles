@@ -380,10 +380,11 @@ case "$tools_choice" in
 esac
 
 # ── 8. Claude Code ────────────────────────────────────────────────────────
-step "Claude Code statusline"
+step "Claude Code"
 
 CLAUDE_DIR="$HOME/.claude"
 if [[ -d "$CLAUDE_DIR" ]]; then
+    # Statusline script
     if [[ -L "$CLAUDE_DIR/statusline-command.sh" ]]; then
         echo "Statusline already symlinked. Skipping."
         record_status "Claude statusline" "already done"
@@ -397,9 +398,25 @@ if [[ -d "$CLAUDE_DIR" ]]; then
         echo "Symlinked $CLAUDE_DIR/statusline-command.sh -> $DOTFILES/claude/statusline-command.sh"
         record_status "Claude statusline" "configured"
     fi
+
+    # settings.json
+    if [[ -L "$CLAUDE_DIR/settings.json" ]]; then
+        echo "settings.json already symlinked. Skipping."
+        record_status "Claude settings" "already done"
+    elif [[ -e "$CLAUDE_DIR/settings.json" ]]; then
+        echo "WARNING: $CLAUDE_DIR/settings.json exists but is not a symlink."
+        echo "Back it up (cp $CLAUDE_DIR/settings.json $CLAUDE_DIR/settings.json.bak)"
+        echo "and re-run, or manually symlink:"
+        echo "  ln -sf $DOTFILES/claude/settings.json $CLAUDE_DIR/settings.json"
+        record_status "Claude settings" "skipped (existing file)"
+    else
+        ln -sf "$DOTFILES/claude/settings.json" "$CLAUDE_DIR/settings.json"
+        echo "Symlinked $CLAUDE_DIR/settings.json -> $DOTFILES/claude/settings.json"
+        record_status "Claude settings" "configured"
+    fi
 else
     echo "~/.claude not found. Skipping (Claude Code not installed?)."
-    record_status "Claude statusline" "skipped (no ~/.claude)"
+    record_status "Claude Code" "skipped (no ~/.claude)"
 fi
 
 # ── 9. Project directory ──────────────────────────────────────────────────
