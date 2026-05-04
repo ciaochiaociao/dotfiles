@@ -125,6 +125,17 @@ check_status() {
         fi
     fi
 
+    # Hammerspoon
+    if [[ "$OS" == "Darwin" ]]; then
+        if [[ -L "$HOME/.hammerspoon/init.lua" ]]; then
+            printf "   \033[32m[done]\033[0m    Hammerspoon config (init.lua symlinked)\n"
+        elif [[ -f "$HOME/.hammerspoon/init.lua" ]]; then
+            printf "   \033[33m[warn]\033[0m    Hammerspoon config (init.lua exists but not symlinked)\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Hammerspoon config\n"
+        fi
+    fi
+
     # Project dir
     local local_rc="$HOME/scripts/${CURRENT_SHELL}rc.sh"
     if already_has "PROJDIR" "$local_rc" 2>/dev/null; then
@@ -419,7 +430,31 @@ else
     record_status "Claude Code" "skipped (no ~/.claude)"
 fi
 
-# ── 9. Project directory ──────────────────────────────────────────────────
+# ── 9. Hammerspoon (macOS only) ───────────────────────────────────────────
+step "Hammerspoon"
+
+if [[ "$OS" == "Darwin" ]]; then
+    HAMMERSPOON_DIR="$HOME/.hammerspoon"
+    if [[ -L "$HAMMERSPOON_DIR/init.lua" ]]; then
+        echo "init.lua already symlinked. Skipping."
+        record_status "Hammerspoon" "already done"
+    elif [[ -f "$HAMMERSPOON_DIR/init.lua" ]]; then
+        echo "WARNING: $HAMMERSPOON_DIR/init.lua exists but is not a symlink."
+        echo "Back it up and re-run, or manually symlink:"
+        echo "  ln -sf $DOTFILES/hammerspoon/init.lua $HAMMERSPOON_DIR/init.lua"
+        record_status "Hammerspoon" "skipped (existing file)"
+    else
+        mkdir -p "$HAMMERSPOON_DIR"
+        ln -sf "$DOTFILES/hammerspoon/init.lua" "$HAMMERSPOON_DIR/init.lua"
+        echo "Symlinked $HAMMERSPOON_DIR/init.lua -> $DOTFILES/hammerspoon/init.lua"
+        record_status "Hammerspoon" "configured"
+    fi
+else
+    echo "Hammerspoon is macOS only. Skipping."
+    record_status "Hammerspoon" "skipped (not macOS)"
+fi
+
+# ── 10. Project directory ─────────────────────────────────────────────────
 step "Project directory"
 
 LOCAL_RC="$HOME/scripts/${CURRENT_SHELL}rc.sh"
