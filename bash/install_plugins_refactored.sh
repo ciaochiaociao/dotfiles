@@ -102,11 +102,11 @@ uninstall_mamba_package() {
 
 install_fzf() {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    ~/.fzf/install --all
 }
 
 install_homebrew() {
-    /bin/bash -c "$(download https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    NONINTERACTIVE=1 /bin/bash -c "$(download https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     if [[ "$OS" == "Linux" && -d /home/linuxbrew/.linuxbrew ]]; then
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> "$SHELLRC"
@@ -126,7 +126,7 @@ install_miniforge() {
 }
 
 install_rust() {
-    command -v cargo &>/dev/null || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    command -v cargo &>/dev/null || curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 }
 
 install_aichat() { install_cargo_package "aichat"; }
@@ -143,9 +143,12 @@ install_autojump() {
           . $(python3 -m site --user-base)/etc/profile.d/autojump.sh
     else
         (
-            git clone https://github.com/wting/autojump.git ~/.autojump
-            cd ~/.autojump
-            ./install.py
+            local tmpdir
+            tmpdir="$(mktemp -d)"
+            git clone https://github.com/wting/autojump.git "$tmpdir"
+            cd "$tmpdir"
+            ./install.py --destdir ~/.local
+            rm -rf "$tmpdir"
             cat >> "$SHELLRC" <<-'EOF'
 [[ -s ~/.local/etc/profile.d/autojump.sh ]] && \
   . ~/.local/etc/profile.d/autojump.sh
@@ -197,21 +200,21 @@ install_htop() { install_mamba_package "htop"; }
 
 install_atop() {
     if [[ "$OS" == "Darwin" ]]; then
-        brew install atop
-    else
-        (
-            cd "$HOME"
-            local version="2.12.1"
-            download "https://www.atoptool.nl/download/atop-${version}.tar.gz" "atop-${version}.tar.gz"
-            tar -xzf "atop-${version}.tar.gz"
-            cd "atop-${version}"
-            make
-            mkdir -p ~/.local/bin
-            cp atop ~/.local/bin/
-            cd "$HOME"
-            rm -rf "atop-${version}" "atop-${version}.tar.gz"
-        )
+        echo "atop is Linux-only (requires /proc and kernel process accounting). Skipping."
+        return 1
     fi
+    (
+        cd "$HOME"
+        local version="2.12.1"
+        download "https://www.atoptool.nl/download/atop-${version}.tar.gz" "atop-${version}.tar.gz"
+        tar -xzf "atop-${version}.tar.gz"
+        cd "atop-${version}"
+        make
+        mkdir -p ~/.local/bin
+        cp atop ~/.local/bin/
+        cd "$HOME"
+        rm -rf "atop-${version}" "atop-${version}.tar.gz"
+    )
 }
 
 install_rg() { install_cargo_package "ripgrep"; }
@@ -267,7 +270,10 @@ uninstall_z() {
 
 uninstall_autojump() {
     python3 -m pip uninstall -y autojump 2>/dev/null
-    rm -rf ~/.autojump
+    rm -f ~/.local/bin/autojump
+    rm -rf ~/.local/share/autojump
+    rm -f ~/.local/etc/profile.d/autojump.sh
+    rm -f ~/.local/share/man/man1/autojump.1
     echo "Note: remove autojump lines from $SHELLRC"
 }
 
@@ -309,10 +315,10 @@ uninstall_mamba_htop() { uninstall_mamba_package "htop"; }
 
 uninstall_atop() {
     if [[ "$OS" == "Darwin" ]]; then
-        brew uninstall atop
-    else
-        rm -f ~/.local/bin/atop
+        echo "atop is Linux-only — nothing to uninstall."
+        return 1
     fi
+    rm -f ~/.local/bin/atop
 }
 
 uninstall_cargo_rg() { uninstall_cargo_package "ripgrep"; }
