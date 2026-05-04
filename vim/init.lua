@@ -2,6 +2,10 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Disable netrw early so neo-tree handles directory opens (must precede any plugin load)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 vim.opt.rtp:prepend(lazypath)
 
@@ -16,7 +20,16 @@ require("lazy").setup({
             { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
         },
         config = function()
+            local actions = require("telescope.actions")
             require("telescope").setup({
+                defaults = {
+                    mappings = {
+                        i = {
+                            ["<C-j>"] = actions.move_selection_next,
+                            ["<C-k>"] = actions.move_selection_previous,
+                        },
+                    },
+                },
                 extensions = {
                     fzf = {
                         fuzzy = true,
@@ -48,6 +61,28 @@ require("lazy").setup({
         lazy = false,
         opts = {
             input = { enabled = true },
+            dashboard = {
+                enabled = true,
+                preset = {
+                    keys = {
+                        { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+                        { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+                        { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+                        { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+                        { icon = " ", key = "s", desc = "Restore Session", action = ":SessionRestore" },
+                        { icon = " ", key = "w", desc = "PROJECT", action = ":lua require('telescope.builtin').find_files({ cwd = '$PROJDIR' })" },
+                        { icon = " ", key = "c", desc = "Config", action = ":e $MYVIMRC" },
+                        { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+                    },
+                },
+                sections = {
+                    { section = "header" },
+                    { section = "keys", gap = 1, padding = 1 },
+                    { section = "recent_files", limit = 5, padding = 1 },
+                    { section = "projects", limit = 5, padding = 1 },
+                    { section = "startup" },
+                },
+            },
         },
     },
     {
@@ -95,6 +130,58 @@ require("lazy").setup({
             { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Tmux/Window right" },
             { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Tmux/Window previous" },
         },
+    },
+    {
+        "akinsho/bufferline.nvim",
+        version = "*",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        event = "VeryLazy",
+        opts = {
+            options = {
+                diagnostics = "nvim_lsp",
+                show_buffer_close_icons = true,
+                show_close_icon = false,
+                separator_style = "slant",
+                offsets = {
+                    {
+                        filetype = "neo-tree",
+                        text = "File Explorer",
+                        highlight = "Directory",
+                        text_align = "left",
+                        separator = true,
+                    },
+                },
+            },
+        },
+        keys = {
+            { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",      desc = "Prev buffer" },
+            { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",      desc = "Next buffer" },
+            { "<leader>bd", "<cmd>bdelete<cr>",                  desc = "Delete buffer" },
+            { "<leader>bp", "<cmd>BufferLineTogglePin<cr>",      desc = "Pin buffer" },
+            { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "Close non-pinned" },
+        },
+    },
+    {
+        "rmagatti/auto-session",
+        lazy = false,
+        opts = {
+            auto_save = true,
+            auto_restore = true,
+            suppressed_dirs = { "~/", "~/Downloads", "/" },
+            -- Close neo-tree before saving so it doesn't get persisted
+            pre_save_cmds = { function()
+                if pcall(require, "neo-tree") then
+                    vim.cmd("Neotree close")
+                end
+            end },
+        },
+    },
+    {
+        "szw/vim-maximizer",
+        keys = {
+            { "<leader>z", "<cmd>MaximizerToggle<cr>", desc = "Maximize/restore window" },
+        },
+        cmd = { "MaximizerToggle" },
     },
     {
         "nvim-neo-tree/neo-tree.nvim",
@@ -227,6 +314,12 @@ map("n", "<F4>", ":set relativenumber! number!<CR>")
 -- Terminal mode escape
 map("t", "<Esc>", [[<C-\><C-n>]])
 
+-- Terminal mode window navigation
+map("t", "<C-h>", [[<C-\><C-n><C-w>h]])
+map("t", "<C-j>", [[<C-\><C-n><C-w>j]])
+map("t", "<C-k>", [[<C-\><C-n><C-w>k]])
+map("t", "<C-l>", [[<C-\><C-n><C-w>l]])
+
 -- Telescope keymaps
 local builtin = require("telescope.builtin")
 map("n", "<leader>ff", builtin.find_files)
@@ -236,32 +329,20 @@ map("n", "<leader>fh", builtin.help_tags)
 map("n", "<leader>f~", function()
     builtin.find_files({ cwd = "~" })
 end)
+map("n", "<leader>fw", function()
+    builtin.find_files({ cwd = "$PROJDIR" })
+end)
+map("n", "<leader>gw", function()
+    builtin.live_grep({ cwd = "$PROJDIR" })
+end)
 
--- neo-tree (disable netrw so neo-tree handles directory opens)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 
-vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-        if vim.fn.argc() == 0 then
-            vim.cmd("Neotree show")
-        end
-    end,
-})
+-- neo-tree (netrw disabled at top of file)
 map("n", "<leader>e", ":Neotree toggle<CR>", { silent = true })
+map("n", "<leader>;", function() Snacks.dashboard() end, { desc = "Dashboard" })
 
 -- lightline
 vim.g.lightline = { colorscheme = "gruvbox" }
-
--- startify
-vim.g.startify_lists = {
-    { type = "files",     header = { "   Recent Files" } },
-    { type = "sessions",  header = { "   Sessions" } },
-    { type = "bookmarks", header = { "   Bookmarks" } },
-    { type = "commands",  header = { "   Commands" } },
-}
-vim.g.startify_bookmarks = { "~/.vimrc", "~/", "$PROJDIR" }
-vim.g.startify_session_dir = "~/.vim/session"
 
 -- Python syntax highlighting
 vim.g.python_highlight_all = 1
