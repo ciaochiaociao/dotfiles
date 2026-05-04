@@ -376,7 +376,7 @@ codediff () {
 
 start-ssh-agent() {
     eval "$(ssh-agent -s)"
-    ssh-add ~/.ssh/id_ecdsa
+    ssh-add ~/.ssh/id_ecdsa ~/.ssh/id_rsa
 }
 
 alias pdb='python -m pdb --'
