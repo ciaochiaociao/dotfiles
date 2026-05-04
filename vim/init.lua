@@ -70,7 +70,7 @@ require("lazy").setup({
                         { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
                         { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
                         { icon = " ", key = "s", desc = "Restore Session", action = ":SessionRestore" },
-                        { icon = " ", key = "w", desc = "PROJECT", action = ":lua require('telescope.builtin').find_files({ cwd = '$PROJDIR' })" },
+                        { icon = " ", key = "w", desc = "Project ($PROJDIR)", action = ":lua require('telescope.builtin').find_files({ cwd = vim.env.PROJDIR or vim.fn.expand('~') })" },
                         { icon = " ", key = "c", desc = "Config", action = ":e $MYVIMRC" },
                         { icon = " ", key = "q", desc = "Quit", action = ":qa" },
                     },
@@ -330,10 +330,10 @@ map("n", "<leader>f~", function()
     builtin.find_files({ cwd = "~" })
 end)
 map("n", "<leader>fw", function()
-    builtin.find_files({ cwd = "$PROJDIR" })
+    builtin.find_files({ cwd = vim.env.PROJDIR or vim.fn.expand("~") })
 end)
 map("n", "<leader>gw", function()
-    builtin.live_grep({ cwd = "$PROJDIR" })
+    builtin.live_grep({ cwd = vim.env.PROJDIR or vim.fn.expand("~") })
 end)
 
 

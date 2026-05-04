@@ -98,7 +98,7 @@ let g:startify_lists = [
   \ { 'type': 'bookmarks', 'header': ['   Bookmarks'] },
   \ { 'type': 'commands',  'header': ['   Commands'] },
   \ ]
-let g:startify_bookmarks = [ '~/.vimrc', '~/', '$PROJDIR']
+let g:startify_bookmarks = [ '~/.vimrc', $PROJDIR ]
 let g:startify_session_dir = '~/.vim/session'
 
 " syntax
