@@ -148,14 +148,10 @@ if command -v nvim &>/dev/null; then
 else
     echo "nvim not found. Skipping."
     if ask "Would you like to install neovim?"; then
-        if [[ "$OS" == "Darwin" ]]; then
+        if command -v brew &>/dev/null; then
             brew install neovim
-        elif command -v apt &>/dev/null; then
-            sudo apt install -y neovim
-        elif command -v dnf &>/dev/null; then
-            sudo dnf install -y neovim
         else
-            echo "Please install neovim manually: https://neovim.io"
+            echo "Please install Homebrew first, or install neovim manually: https://neovim.io"
         fi
         # Re-run nvim setup if install succeeded
         if command -v nvim &>/dev/null; then
@@ -176,14 +172,10 @@ if command -v tmux &>/dev/null; then
 else
     echo "tmux not found. Skipping."
     if ask "Would you like to install tmux?"; then
-        if [[ "$OS" == "Darwin" ]]; then
+        if command -v brew &>/dev/null; then
             brew install tmux
-        elif command -v apt &>/dev/null; then
-            sudo apt install -y tmux
-        elif command -v dnf &>/dev/null; then
-            sudo dnf install -y tmux
         else
-            echo "Please install tmux manually."
+            echo "Please install Homebrew first, or install tmux manually."
         fi
         if command -v tmux &>/dev/null; then
             bash "$DOTFILES/tmux/install.sh"

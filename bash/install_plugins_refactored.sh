@@ -32,6 +32,7 @@ download() {
 # Each tool is registered as: name|check_target|install_fn|uninstall_fn
 # check_target: command name or path (~/... or /...) to test existence
 TOOLS=(
+    "Neovim|nvim|install_neovim|uninstall_neovim"
     "Miniforge|conda|install_miniforge|uninstall_miniforge"
     "fzf|fzf|install_fzf|uninstall_fzf"
     "Homebrew|brew|install_homebrew|uninstall_homebrew"
@@ -99,6 +100,15 @@ uninstall_mamba_package() {
 }
 
 # ── Install functions ──────────────────────────────────────────────────────
+
+install_neovim() {
+    if command -v brew &>/dev/null; then
+        brew install neovim
+    else
+        echo "No supported package manager found for neovim (install Homebrew first)" >&2
+        return 1
+    fi
+}
 
 install_fzf() {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -243,6 +253,12 @@ install_nnn() { install_mamba_package "nnn"; }
 
 # ── Uninstall functions ────────────────────────────────────────────────────
 
+uninstall_neovim() {
+    if command -v brew &>/dev/null; then
+        brew uninstall neovim
+    fi
+}
+
 uninstall_fzf() {
     ~/.fzf/uninstall 2>/dev/null
     rm -rf ~/.fzf
@@ -292,9 +308,9 @@ uninstall_ollama() {
     if [[ "$OS" == "Darwin" ]]; then
         rm -rf /usr/local/bin/ollama ~/.ollama
     else
-        sudo rm -f /usr/local/bin/ollama
-        sudo rm -rf /usr/share/ollama
-        echo "Note: remove ollama service if installed (systemctl)"
+        rm -f ~/.local/bin/ollama
+        rm -rf ~/.ollama
+        echo "Note: if ollama was installed system-wide, remove it with your package manager"
     fi
 }
 

@@ -13,6 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Tool list — edit this to add/remove tools
 TOOLS="
+- Neovim: modern Vim fork with Lua scripting, built-in LSP, and async plugin support. The foundation for the dotfiles' init.lua config (lazy.nvim, telescope, treesitter, mason). Install via brew (macOS) or apt/dnf (Linux).
 - Miniforge: conda/mamba package manager — manages Python environments and installs pre-built binary packages. Foundation for the 'tools' conda env below. Install via official shell installer.
 - fzf: general-purpose fuzzy finder — interactive filtering for files, command history, git branches, etc. Powers Ctrl-R history search and file pickers. Install via git clone to ~/.fzf.
 - Homebrew: cross-platform package manager — works on macOS and Linux. Useful fallback when cargo/mamba don't have a package. Install via official script.
