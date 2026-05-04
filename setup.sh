@@ -7,17 +7,19 @@ ARCH="$(uname -m)"
 CURRENT_SHELL="$(basename "$SHELL")"
 SHELLRC="$HOME/.${CURRENT_SHELL}rc"
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
+NVIM_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+LAZY_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim"
 
-echo "========================================"
-echo " Dotfiles Setup"
-echo "========================================"
-echo " OS:       $OS ($ARCH)"
-echo " Shell:    $CURRENT_SHELL ($SHELLRC)"
-echo " Dotfiles: $DOTFILES"
-echo "========================================"
-echo
+# ── Status tracking ───────────────────────────────────────────────────────
+declare -a STATUS_NAMES=()
+declare -a STATUS_STATES=()
 
-# ── Helper ─────────────────────────────────────────────────────────────────
+record_status() {
+    STATUS_NAMES+=("$1")
+    STATUS_STATES+=("$2")
+}
+
+# ── Helpers ────────────────────────────────────────────────────────────────
 step() {
     echo
     echo "── $1 ──"
@@ -34,6 +36,114 @@ already_has() {
     local file="$2"
     [[ -f "$file" ]] && grep -qF "$pattern" "$file"
 }
+
+# ── Pre-flight status check ───────────────────────────────────────────────
+check_status() {
+    echo "========================================"
+    echo " Dotfiles Setup"
+    echo "========================================"
+    echo " OS:       $OS ($ARCH)"
+    echo " Shell:    $CURRENT_SHELL ($SHELLRC)"
+    echo " Dotfiles: $DOTFILES"
+    echo "========================================"
+    echo
+    echo " Current status:"
+
+    # Shell config
+    if already_has "dotfiles/bash/common_aliases.sh" "$SHELLRC" 2>/dev/null; then
+        printf "   \033[32m[done]\033[0m    Shell config sourced in $SHELLRC\n"
+    else
+        printf "   \033[33m[missing]\033[0m  Shell config not in $SHELLRC\n"
+    fi
+
+    # Vim
+    if command -v vim &>/dev/null; then
+        if already_has "dotfiles/vim/vimrc.vim" ~/.vimrc 2>/dev/null; then
+            printf "   \033[32m[done]\033[0m    Vim config (vimrc.vim sourced)\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Vim config (vimrc.vim not sourced)\n"
+        fi
+        if [[ -d "$HOME/.vim/pack/plugins/start/gruvbox" ]]; then
+            printf "   \033[32m[done]\033[0m    Vim plugins\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Vim plugins\n"
+        fi
+    else
+        printf "   \033[90m[skip]\033[0m    Vim (not installed)\n"
+    fi
+
+    # Neovim
+    if command -v nvim &>/dev/null; then
+        if [[ -L "$NVIM_CONFIG_DIR/init.lua" ]]; then
+            printf "   \033[32m[done]\033[0m    Neovim config (init.lua symlinked)\n"
+        elif [[ -f "$NVIM_CONFIG_DIR/init.lua" ]]; then
+            printf "   \033[33m[warn]\033[0m    Neovim config (init.lua exists but not symlinked)\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Neovim config\n"
+        fi
+        if [[ -d "$LAZY_DIR" ]]; then
+            printf "   \033[32m[done]\033[0m    lazy.nvim plugin manager\n"
+        else
+            printf "   \033[33m[missing]\033[0m  lazy.nvim plugin manager\n"
+        fi
+    else
+        printf "   \033[90m[skip]\033[0m    Neovim (not installed)\n"
+    fi
+
+    # Tmux
+    if command -v tmux &>/dev/null; then
+        if [[ -d "$HOME/.config/tmux/oh-my-tmux" ]]; then
+            printf "   \033[32m[done]\033[0m    Tmux (oh-my-tmux configured)\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Tmux config\n"
+        fi
+    else
+        printf "   \033[90m[skip]\033[0m    Tmux (not installed)\n"
+    fi
+
+    # ctags
+    if [[ -f ~/.ctags ]] || [[ -f ~/.ctags.d/default.ctags ]]; then
+        printf "   \033[32m[done]\033[0m    ctags config\n"
+    elif command -v ctags &>/dev/null; then
+        printf "   \033[33m[missing]\033[0m  ctags config\n"
+    else
+        printf "   \033[90m[skip]\033[0m    ctags (not installed)\n"
+    fi
+
+    # Fonts
+    if [[ "$OS" == "Darwin" ]]; then
+        if brew list --cask font-jetbrains-mono-nerd-font &>/dev/null 2>&1; then
+            printf "   \033[32m[done]\033[0m    Nerd Fonts\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Nerd Fonts\n"
+        fi
+    elif [[ "$OS" == "Linux" ]]; then
+        if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd"; then
+            printf "   \033[32m[done]\033[0m    Nerd Fonts\n"
+        else
+            printf "   \033[33m[missing]\033[0m  Nerd Fonts\n"
+        fi
+    fi
+
+    # Project dir
+    local local_rc="$HOME/scripts/${CURRENT_SHELL}rc.sh"
+    if already_has "PROJDIR" "$local_rc" 2>/dev/null; then
+        printf "   \033[32m[done]\033[0m    Project directory\n"
+    else
+        printf "   \033[33m[missing]\033[0m  Project directory\n"
+    fi
+
+    echo "========================================"
+    echo
+}
+
+# ── Show pre-flight status ─────────────────────────────────────────────────
+check_status
+
+if ! ask "Proceed with setup?"; then
+    echo "Aborted."
+    exit 0
+fi
 
 # ── 1. Shell config ───────────────────────────────────────────────────────
 step "Shell config"
@@ -58,8 +168,9 @@ case "$CURRENT_SHELL" in
 # bash-specific config
 [ -f ~/dotfiles/bash/bashrc.sh ] && . ~/dotfiles/bash/bashrc.sh
 EOF
+            record_status "Shell config" "configured"
         else
-            echo "Shell config already sourced in $SHELLRC. Skipping."
+            record_status "Shell config" "already done"
         fi
 
         # ssh-agent auto-start
@@ -87,13 +198,15 @@ EOF
 # local overrides
 [ -f ~/scripts/zshrc.sh ] && source ~/scripts/zshrc.sh
 EOF
+            record_status "Shell config" "configured"
         else
-            echo "Shell config already sourced in $SHELLRC. Skipping."
+            record_status "Shell config" "already done"
         fi
         ;;
     *)
         echo "Unsupported shell: $CURRENT_SHELL (only bash and zsh are supported)"
         echo "Skipping shell config. You can manually source ~/dotfiles/bash/common_aliases.sh"
+        record_status "Shell config" "skipped (unsupported shell)"
         ;;
 esac
 
@@ -107,20 +220,18 @@ if command -v vim &>/dev/null; then
 
 source ~/dotfiles/vim/vimrc.vim
 EOF
-    else
-        echo "vimrc.vim already sourced. Skipping."
     fi
 
     echo "Installing vim plugins..."
     bash "$DOTFILES/vim/install_plugins.sh"
+    record_status "Vim" "configured"
 else
     echo "vim not found. Skipping."
+    record_status "Vim" "skipped (not installed)"
 fi
 
 # ── 3. Neovim ──────────────────────────────────────────────────────────────
 step "Neovim"
-
-NVIM_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 
 if command -v nvim &>/dev/null; then
     mkdir -p "$NVIM_CONFIG_DIR"
@@ -136,7 +247,6 @@ if command -v nvim &>/dev/null; then
     fi
 
     # Install lazy.nvim plugin manager if missing
-    LAZY_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim"
     if [[ ! -d "$LAZY_DIR" ]]; then
         echo "Installing lazy.nvim..."
         git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable "$LAZY_DIR"
@@ -144,9 +254,9 @@ if command -v nvim &>/dev/null; then
         echo "lazy.nvim already installed."
     fi
 
-    echo "Run 'nvim' to trigger lazy.nvim plugin installation."
+    record_status "Neovim" "configured"
 else
-    echo "nvim not found. Skipping."
+    echo "nvim not found."
     if ask "Would you like to install neovim?"; then
         if command -v brew &>/dev/null; then
             brew install neovim
@@ -157,10 +267,13 @@ else
         if command -v nvim &>/dev/null; then
             mkdir -p "$NVIM_CONFIG_DIR"
             ln -sf "$DOTFILES/vim/init.lua" "$NVIM_CONFIG_DIR/init.lua"
-            LAZY_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim"
             [[ ! -d "$LAZY_DIR" ]] && git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable "$LAZY_DIR"
-            echo "Neovim configured. Run 'nvim' to install plugins."
+            record_status "Neovim" "installed + configured"
+        else
+            record_status "Neovim" "failed to install"
         fi
+    else
+        record_status "Neovim" "skipped"
     fi
 fi
 
@@ -169,8 +282,9 @@ step "Tmux"
 
 if command -v tmux &>/dev/null; then
     bash "$DOTFILES/tmux/install.sh"
+    record_status "Tmux" "configured"
 else
-    echo "tmux not found. Skipping."
+    echo "tmux not found."
     if ask "Would you like to install tmux?"; then
         if command -v brew &>/dev/null; then
             brew install tmux
@@ -179,7 +293,12 @@ else
         fi
         if command -v tmux &>/dev/null; then
             bash "$DOTFILES/tmux/install.sh"
+            record_status "Tmux" "installed + configured"
+        else
+            record_status "Tmux" "failed to install"
         fi
+    else
+        record_status "Tmux" "skipped"
     fi
 fi
 
@@ -188,7 +307,6 @@ step "ctags config"
 
 if [[ ! -f ~/.ctags ]] && [[ ! -f ~/.ctags.d/default.ctags ]]; then
     if command -v ctags &>/dev/null; then
-        # Universal ctags uses ~/.ctags.d/, exuberant ctags uses ~/.ctags
         if ctags --version 2>/dev/null | grep -q "Universal"; then
             mkdir -p ~/.ctags.d
             ln -sf "$DOTFILES/others/.ctags" ~/.ctags.d/default.ctags
@@ -197,11 +315,14 @@ if [[ ! -f ~/.ctags ]] && [[ ! -f ~/.ctags.d/default.ctags ]]; then
             ln -sf "$DOTFILES/others/.ctags" ~/.ctags
             echo "Symlinked ~/.ctags"
         fi
+        record_status "ctags" "configured"
     else
         echo "ctags not found. Skipping."
+        record_status "ctags" "skipped (not installed)"
     fi
 else
     echo "ctags config already exists. Skipping."
+    record_status "ctags" "already done"
 fi
 
 # ── 6. Fonts ──────────────────────────────────────────────────────────────
@@ -210,14 +331,22 @@ step "Nerd Fonts"
 if [[ "$OS" == "Darwin" ]]; then
     if brew list --cask font-jetbrains-mono-nerd-font &>/dev/null 2>&1; then
         echo "JetBrains Mono Nerd Font already installed. Skipping."
+        record_status "Nerd Fonts" "already done"
     elif ask "Install JetBrains Mono Nerd Font?"; then
         brew install --cask font-jetbrains-mono-nerd-font
+        record_status "Nerd Fonts" "installed"
+    else
+        record_status "Nerd Fonts" "skipped"
     fi
 elif [[ "$OS" == "Linux" ]]; then
     if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd"; then
         echo "JetBrains Mono Nerd Font already installed. Skipping."
+        record_status "Nerd Fonts" "already done"
     elif ask "Install JetBrains Mono Nerd Font?"; then
         bash "$DOTFILES/bash/install_fonts.sh"
+        record_status "Nerd Fonts" "installed"
+    else
+        record_status "Nerd Fonts" "skipped"
     fi
 fi
 
@@ -232,10 +361,22 @@ read -p "Choice [1/2/3]: " -n 1 tools_choice
 echo
 
 case "$tools_choice" in
-    1) bash "$DOTFILES/bash/install_plugins.sh" ;;
-    2) bash "$DOTFILES/bash/install_plugins_claude.sh" ;;
-    3) echo "Skipping CLI tools." ;;
-    *) echo "Invalid choice. Skipping." ;;
+    1)
+        bash "$DOTFILES/bash/install_plugins.sh"
+        record_status "CLI tools" "ran batch installer"
+        ;;
+    2)
+        bash "$DOTFILES/bash/install_plugins_claude.sh"
+        record_status "CLI tools" "ran Claude installer"
+        ;;
+    3)
+        echo "Skipping CLI tools."
+        record_status "CLI tools" "skipped"
+        ;;
+    *)
+        echo "Invalid choice. Skipping."
+        record_status "CLI tools" "skipped"
+        ;;
 esac
 
 # ── 8. Project directory ──────────────────────────────────────────────────
@@ -247,20 +388,38 @@ if ! already_has "PROJDIR" "$LOCAL_RC"; then
     if [[ -n "$PROJDIR" ]]; then
         echo "export PROJDIR=\"$PROJDIR\"" >> "$LOCAL_RC"
         echo "PROJDIR set to $PROJDIR in $LOCAL_RC"
+        record_status "Project directory" "set to $PROJDIR"
+    else
+        record_status "Project directory" "skipped"
     fi
 else
     echo "PROJDIR already set. Skipping."
+    record_status "Project directory" "already done"
 fi
 
-# ── Done ──────────────────────────────────────────────────────────────────
+# ── Final report ──────────────────────────────────────────────────────────
 echo
 echo "========================================"
-echo " Setup complete!"
+echo " Setup Results"
+echo "========================================"
+for i in "${!STATUS_NAMES[@]}"; do
+    local_state="${STATUS_STATES[$i]}"
+    case "$local_state" in
+        *"already"*|*"configured"*|*"installed"*|*"set to"*|*"ran"*)
+            printf "  \033[32m✓\033[0m %-20s %s\n" "${STATUS_NAMES[$i]}" "$local_state" ;;
+        *"skipped"*)
+            printf "  \033[33m–\033[0m %-20s %s\n" "${STATUS_NAMES[$i]}" "$local_state" ;;
+        *"failed"*)
+            printf "  \033[31m✗\033[0m %-20s %s\n" "${STATUS_NAMES[$i]}" "$local_state" ;;
+    esac
+done
 echo "========================================"
 echo
 echo "Next steps:"
 echo "  1. Restart your shell or run: source $SHELLRC"
-[[ -d "$NVIM_CONFIG_DIR" ]] && echo "  2. Run 'nvim' to install plugins via lazy.nvim"
+if command -v nvim &>/dev/null; then
+    echo "  2. Run 'nvim' to install plugins via lazy.nvim"
+fi
 echo
 echo "To install/manage CLI tools later:"
 echo "  bash $DOTFILES/bash/install_plugins.sh"
