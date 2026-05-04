@@ -341,12 +341,11 @@ setup_local_path() {
 
 # ── Interactive menu ───────────────────────────────────────────────────────
 
-# Parse a selection string like "1,3,5-7" into an array of 0-based indices
+# Parse a selection string like "1,3,5-7" into PARSED_SELECTION (0-based indices)
 parse_selection() {
     local input="$1"
     local max="$2"
-    local -n _result=$3
-    _result=()
+    PARSED_SELECTION=()
 
     # Split on commas and spaces
     IFS=', ' read -ra tokens <<< "$input"
@@ -356,12 +355,12 @@ parse_selection() {
             local end="${token#*-}"
             for (( i=start; i<=end; i++ )); do
                 if (( i >= 1 && i <= max )); then
-                    _result+=($((i - 1)))
+                    PARSED_SELECTION+=($((i - 1)))
                 fi
             done
         elif [[ "$token" =~ ^[0-9]+$ ]]; then
             if (( token >= 1 && token <= max )); then
-                _result+=($((token - 1)))
+                PARSED_SELECTION+=($((token - 1)))
             fi
         fi
     done
@@ -418,7 +417,8 @@ main() {
         if [[ "$install_input" == "all" ]]; then
             to_install=("${missing_indices[@]}")
         elif [[ -n "$install_input" ]]; then
-            parse_selection "$install_input" "$total" to_install
+            parse_selection "$install_input" "$total"
+            to_install=("${PARSED_SELECTION[@]}")
         fi
     else
         echo "All tools are already installed!"
@@ -437,7 +437,8 @@ main() {
         if [[ "$uninstall_input" == "all" ]]; then
             to_uninstall=("${installed_indices[@]}")
         elif [[ -n "$uninstall_input" ]]; then
-            parse_selection "$uninstall_input" "$total" to_uninstall
+            parse_selection "$uninstall_input" "$total"
+            to_uninstall=("${PARSED_SELECTION[@]}")
         fi
     else
         local to_uninstall=()
