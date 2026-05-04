@@ -6,6 +6,13 @@ input=$(cat)
 # Extract values
 model=$(echo "$input" | jq -r '.model.display_name')
 model_id=$(echo "$input" | jq -r '.model.id // empty')
+
+# Sandbox status (from env var propagated by Claude Code; not in JSON input)
+if [ "${SANDBOX_RUNTIME:-}" = "1" ]; then
+    sandbox="🛡 sandbox on"
+else
+    sandbox="🛡 sandbox off"
+fi
 session_name=$(echo "$input" | jq -r '.session_name // empty')
 workdir=$(echo "$input" | jq -r '.workspace.current_dir')
 vim_mode=$(echo "$input" | jq -r '.vim.mode // empty')
@@ -36,6 +43,9 @@ parts=()
 
 # Model name + ID (temporary)
 [ -n "$model" ] && parts+=("$model ($model_id)")
+
+# Sandbox status
+parts+=("$sandbox")
 
 # Context progress bar
 [ -n "$progress_bar" ] && parts+=("$progress_bar")
